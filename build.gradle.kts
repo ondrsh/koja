@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-	alias(libs.plugins.android)
 	alias(libs.plugins.gradle.versions)
 	alias(libs.plugins.kotlin.multiplatform)
 	alias(libs.plugins.kotlin.serialization)
@@ -21,19 +20,23 @@ spotless {
 }
 
 kotlin {
-	androidTarget {
+	js(IR) {
+		browser()
+		nodejs()
+		binaries.library()
+	}
+
+	jvm {
 		compilerOptions {
 			jvmTarget.set(JvmTarget.JVM_11)
 		}
 	}
+
 	iosArm64()
 	iosX64()
+
+	linuxX64()
 	macosArm64()
-	js(IR) {
-		browser()
-		nodejs()
-	}
-	jvm()
 
 	sourceSets {
 		commonMain {
@@ -47,17 +50,5 @@ kotlin {
 				implementation(kotlin("test"))
 			}
 		}
-	}
-}
-
-android {
-	namespace = "sh.ondr.jsonschema"
-	compileSdk = 34
-	defaultConfig {
-		minSdk = 21
-	}
-	compileOptions {
-		sourceCompatibility = JavaVersion.VERSION_11
-		targetCompatibility = JavaVersion.VERSION_11
 	}
 }
