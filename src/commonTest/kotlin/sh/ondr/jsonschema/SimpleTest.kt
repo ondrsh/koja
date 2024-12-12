@@ -30,7 +30,7 @@ class SimpleTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<SimpleNameClass>()
-		assertEquals(expectedSchema, actualSchema)
+		assertEquals(expectedSchema, actualSchema.jsonObject)
 	}
 
 	@Test
@@ -64,7 +64,7 @@ class SimpleTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<PrimitiveTypes>()
-		assertEquals(expectedSchema, actualSchema)
+		assertEquals(expectedSchema, actualSchema.jsonObject)
 	}
 
 	@Test
@@ -78,6 +78,7 @@ class SimpleTest {
 		)
 
 		// "nullableInt" is also optional (no default, but nullable)
+		// "optionalString", "nullableInt" and "defaultInt" should not be required
 		val expectedSchema =
 			Json.parseToJsonElement(
 				"""
@@ -95,7 +96,7 @@ class SimpleTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<OptionalFields>()
-		assertEquals(expectedSchema, actualSchema)
+		assertEquals(expectedSchema, actualSchema.jsonObject)
 	}
 
 	@Test
@@ -128,7 +129,7 @@ class SimpleTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<Person>()
-		assertEquals(expectedSchema, actualSchema)
+		assertEquals(expectedSchema, actualSchema.jsonObject)
 	}
 
 	@Test
@@ -160,7 +161,7 @@ class SimpleTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<ListsExample>()
-		assertEquals(expectedSchema, actualSchema)
+		assertEquals(expectedSchema, actualSchema.jsonObject)
 	}
 
 	@Test
@@ -187,7 +188,7 @@ class SimpleTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<MapExample>()
-		assertEquals(expectedSchema, actualSchema)
+		assertEquals(expectedSchema, actualSchema.jsonObject)
 	}
 
 	@Serializable
@@ -215,7 +216,7 @@ class SimpleTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<EnumHolder>()
-		assertEquals(expectedSchema, actualSchema)
+		assertEquals(expectedSchema, actualSchema.jsonObject)
 	}
 
 	@Serializable
@@ -249,7 +250,7 @@ class SimpleTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<ShapeHolder>()
-		assertEquals(expectedSchema, actualSchema)
+		assertEquals(expectedSchema, actualSchema.jsonObject)
 	}
 
 	@Test
@@ -274,7 +275,7 @@ class SimpleTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<FullyOptional>()
-		assertEquals(expectedSchema, actualSchema)
+		assertEquals(expectedSchema, actualSchema.jsonObject)
 	}
 
 	@Serializable
@@ -334,6 +335,6 @@ class SimpleTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<ComplexClass>()
-		assertEquals(expectedSchema, actualSchema)
+		assertEquals(expectedSchema, actualSchema.jsonObject)
 	}
 }

@@ -4,18 +4,8 @@ package sh.ondr.jsonschema
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.json.JsonArrayBuilder
-import kotlinx.serialization.json.add
 
-fun JsonArrayBuilder.addAll(elements: Iterable<String>) {
-	elements.forEach {
-		add(it)
-	}
-}
-
-fun SerialDescriptor.childRequired(
-	childDescriptor: SerialDescriptor,
-	i: Int,
-): Boolean {
-	return isElementOptional(i).not() && childDescriptor.isNullable.not()
+// Opinionated: In this library, a field is required if it doesn't have a default AND is not nullable
+fun SerialDescriptor.childRequired(index: Int): Boolean {
+	return isElementOptional(index).not() && getElementDescriptor(index).isNullable.not()
 }
