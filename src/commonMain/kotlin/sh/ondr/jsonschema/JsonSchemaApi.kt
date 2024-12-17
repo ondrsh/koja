@@ -76,8 +76,8 @@ private fun SerialDescriptor.toObjectSchema(): JsonSchema {
 
 private fun SerialDescriptor.toArraySchema(): JsonSchema {
 	// Lists have a single element descriptor for items
-	val itemSchema = getElementDescriptor(0).toSchema()
-	return ArraySchema(items = itemSchema)
+	val itemDescriptor = getElementDescriptor(0)
+	return ArraySchema(items = itemDescriptor.toSchema())
 }
 
 // Handle maps as objects with additionalProperties
