@@ -70,7 +70,7 @@ private fun SerialDescriptor.toObjectSchema(): JsonSchema {
 
 	return ObjectSchema(
 		properties = properties,
-		required = requiredFields,
+		required = requiredFields.ifEmpty { null },
 	)
 }
 

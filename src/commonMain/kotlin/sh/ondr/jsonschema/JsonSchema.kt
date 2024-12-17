@@ -13,14 +13,18 @@ sealed class JsonSchema {
 	val jsonObject by lazy { json.encodeToJsonElement(this) }
 
 	companion object {
-		val json = Json { encodeDefaults = false }
+		val json =
+			Json {
+				encodeDefaults = true
+				explicitNulls = false
+			}
 	}
 
 	@Serializable
 	@SerialName("object") // "type":"object"
 	class ObjectSchema(
-		val properties: Map<String, JsonSchema> = emptyMap(),
-		val required: List<String> = emptyList(),
+		val properties: Map<String, JsonSchema>? = null,
+		val required: List<String>? = null,
 		val additionalProperties: JsonElement? = null,
 	) : JsonSchema()
 
