@@ -3,3 +3,9 @@ root = true
 [*.{kt,gradle.kts}]
 indent_style = tab
 indent_size = 2
+ktlint_standard_max-line-length=disabled
+ktlint_standard_filename=disabled
+ktlint_standard_value-argument-comment=disabled
+ktlint_standard_value-parameter-comment=disabled
+ktlint_standard_multiline-expression-wrapping=disabled
+ktlint_standard_string-template-indent=disabled

@@ -35,7 +35,7 @@ class SimpleArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<PrimitiveArrayHolder>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -63,7 +63,7 @@ class SimpleArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<NumbersWithDefault>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -91,7 +91,7 @@ class SimpleArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<OptionalArray>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -120,7 +120,7 @@ class SimpleArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<NullableElementsArray>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -157,7 +157,7 @@ class SimpleArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<PeopleHolder>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Serializable
@@ -188,7 +188,7 @@ class SimpleArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<ColorPalette>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -217,7 +217,7 @@ class SimpleArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<RenamedField>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -245,7 +245,7 @@ class SimpleArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<MapHolder>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Serializable
@@ -281,7 +281,7 @@ class SimpleArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<ShapesHolder>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -317,7 +317,7 @@ class SimpleArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<MixedArray>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -347,7 +347,7 @@ class SimpleArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<NestedArrays>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -386,6 +386,6 @@ class SimpleArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<OptionalObjHolder>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 }

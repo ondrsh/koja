@@ -63,7 +63,7 @@ class AdvancedArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<DeepMixed>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -91,7 +91,7 @@ class AdvancedArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<ShapeCollection>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -125,7 +125,7 @@ class AdvancedArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<ColorGrid>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -178,7 +178,7 @@ class AdvancedArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<MultiOptionArrays>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -226,7 +226,7 @@ class AdvancedArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<AdvancedContainer>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -259,7 +259,7 @@ class AdvancedArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<RenamedEnumHolder>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -288,7 +288,7 @@ class AdvancedArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<PolymorphicContainer>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -342,7 +342,7 @@ class AdvancedArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<MultiArraysHolder>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
 	@Test
@@ -383,6 +383,6 @@ class AdvancedArrayTest {
 			).jsonObject
 
 		val actualSchema = jsonSchema<CrazyNested>()
-		assertEquals(expectedSchema, actualSchema.jsonObject)
+		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 }

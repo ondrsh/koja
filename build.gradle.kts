@@ -1,3 +1,4 @@
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -34,7 +35,7 @@ kotlin {
 
 	iosArm64()
 	iosX64()
-
+	iosSimulatorArm64()
 	linuxX64()
 	macosArm64()
 
@@ -49,6 +50,39 @@ kotlin {
 			dependencies {
 				implementation(kotlin("test"))
 			}
+		}
+	}
+}
+
+mavenPublishing {
+	publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+	signAllPublications()
+
+	coordinates("sh.ondr", "kotlin-json-schema", project.version.toString())
+
+	pom {
+		name = "kotlin-json-schema"
+		description = "A Kotlin Multiplatform library for generating JSON Schemas from @Serializable classes."
+		inceptionYear = "2024"
+		url = "https://github.com/ondrsh/kotlin-json-schema"
+		licenses {
+			license {
+				name = "Apache License 2.0"
+				url = "https://www.apache.org/licenses/LICENSE-2.0"
+				distribution = "repo"
+			}
+		}
+		developers {
+			developer {
+				id = "ondrsh"
+				name = "Andreas Toth"
+				url = "https://github.com/ondrsh"
+			}
+		}
+		scm {
+			url = "https://github.com/ondrsh/kotlin-json-schema"
+			connection = "scm:git:git://github.com/ondrsh/kotlin-json-schema.git"
+			developerConnection = "scm:git:ssh://git@github.com/ondrsh/kotlin-json-schema.git"
 		}
 	}
 }
