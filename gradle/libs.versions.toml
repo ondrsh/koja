@@ -1,7 +1,9 @@
 [versions]
+auto-service-annotations = "1.1.1"
 gradle-versions = "0.51.0"
 kotlin = "2.1.0"
 kotlinx-serialization = "1.7.3"
+ksp-api = "2.1.0-1.0.29"
 maven-publish = "0.30.0"
 spotless = "6.25.0"
 
@@ -14,5 +16,9 @@ maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publ
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 
 [libraries]
+auto-service = { module = "com.google.auto.service:auto-service", version.ref = "auto-service-annotations" }
+auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "auto-service-annotations" }
+kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp-api" }
