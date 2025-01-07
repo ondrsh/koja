@@ -1,5 +1,6 @@
 [versions]
 auto-service-annotations = "1.1.1"
+build-config = "4.1.2"
 gradle-versions = "0.51.0"
 kotlin = "2.1.0"
 kotlinx-serialization = "1.7.3"
@@ -8,6 +9,7 @@ maven-publish = "0.30.0"
 spotless = "6.25.0"
 
 [plugins]
+build-config = { id = "com.github.gmazzo.buildconfig", version.ref = "build-config" }
 gradle-versions = { id = "com.github.ben-manes.versions", version.ref = "gradle-versions" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -19,6 +21,10 @@ spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 auto-service = { module = "com.google.auto.service:auto-service", version.ref = "auto-service-annotations" }
 auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "auto-service-annotations" }
 kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
+kotlin-gradle-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
+kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp-api" }
+ksp-gradle-plugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp-api" }
