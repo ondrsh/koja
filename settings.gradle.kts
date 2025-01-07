@@ -11,4 +11,6 @@ dependencyResolutionManagement {
 	}
 }
 
-rootProject.name = "kotlin-json-schema"
+rootProject.name = "kojas"
+
+include("kojas-runtime")

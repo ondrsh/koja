@@ -1,6 +1,6 @@
-# kotlin-json-schema
+# kojas - JSON schema generator for Kotlin Multiplatform
 
-[![Maven Central](https://img.shields.io/maven-central/v/sh.ondr/kotlin-json-schema.svg?color=blue)](https://search.maven.org/artifact/sh.ondr/kotlin-json-schema)
+[![Maven Central](https://img.shields.io/maven-central/v/sh.ondr/kojas.svg?color=blue)](https://search.maven.org/artifact/sh.ondr/kojas)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 A Kotlin Multiplatform library that generates JSON Schemas from <code>@Serializable</code> classes by inspecting kotlinx.serialization metadata at runtime.
@@ -17,7 +17,7 @@ A Kotlin Multiplatform library that generates JSON Schemas from <code>@Serializa
 Add the dependency:
 ```
 dependencies {
-  implementation("sh.ondr:kotlin-json-schema:0.1.1")
+  implementation("sh.ondr:kojas:0.2.0")
 }
 ```
 
