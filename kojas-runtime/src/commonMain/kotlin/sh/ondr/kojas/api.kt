@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalSerializationApi::class)
 
-package sh.ondr.jsonschema
+package sh.ondr.kojas
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -11,17 +11,17 @@ import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.serializer
-import sh.ondr.jsonschema.JsonSchema.ArraySchema
-import sh.ondr.jsonschema.JsonSchema.BooleanSchema
-import sh.ondr.jsonschema.JsonSchema.NumberSchema
-import sh.ondr.jsonschema.JsonSchema.ObjectSchema
-import sh.ondr.jsonschema.JsonSchema.StringSchema
+import sh.ondr.kojas.Schema.ArraySchema
+import sh.ondr.kojas.Schema.BooleanSchema
+import sh.ondr.kojas.Schema.NumberSchema
+import sh.ondr.kojas.Schema.ObjectSchema
+import sh.ondr.kojas.Schema.StringSchema
 
 /**
  * Returns a JSON Schema representation of the specified type [T].
  *
  * This function analyzes the serialization metadata of the given `@Serializable` class [T]
- * and produces a corresponding [JsonSchema]. The returned schema describes the structure and
+ * and produces a corresponding [Schema]. The returned schema describes the structure and
  * constraints of [T] in terms of JSON Schema types.
  *
  * Example:
@@ -64,10 +64,10 @@ import sh.ondr.jsonschema.JsonSchema.StringSchema
  *
  * [T] must be annotated with `@Serializable`. Otherwise, this function will fail at runtime.
  */
-inline fun <reified T : @Serializable Any> jsonSchema(): JsonSchema = serializer<T>().descriptor.toSchema()
+inline fun <reified T : @Serializable Any> jsonSchema(): Schema = serializer<T>().descriptor.toSchema()
 
 @PublishedApi
-internal fun SerialDescriptor.toSchema(): JsonSchema =
+internal fun SerialDescriptor.toSchema(): Schema =
 	when (kind) {
 		is PrimitiveKind -> toPrimitiveSchema(kind as PrimitiveKind)
 		StructureKind.CLASS, StructureKind.OBJECT -> toObjectSchema()
@@ -78,8 +78,8 @@ internal fun SerialDescriptor.toSchema(): JsonSchema =
 		SerialKind.CONTEXTUAL -> TODO("Handle contextual")
 	}
 
-internal fun SerialDescriptor.toObjectSchema(): JsonSchema {
-	val properties = mutableMapOf<String, JsonSchema>()
+internal fun SerialDescriptor.toObjectSchema(): Schema {
+	val properties = mutableMapOf<String, Schema>()
 	val requiredFields = mutableListOf<String>()
 
 	(0 until elementsCount).forEach { i ->
@@ -97,24 +97,24 @@ internal fun SerialDescriptor.toObjectSchema(): JsonSchema {
 	)
 }
 
-internal fun SerialDescriptor.toArraySchema(): JsonSchema {
+internal fun SerialDescriptor.toArraySchema(): Schema {
 	// Lists have a single element descriptor for items
 	val itemDescriptor = getElementDescriptor(0)
 	return ArraySchema(items = itemDescriptor.toSchema())
 }
 
 // Handle maps as objects with additionalProperties
-internal fun SerialDescriptor.toMapSchema(): JsonSchema {
+internal fun SerialDescriptor.toMapSchema(): Schema {
 	val valueDescriptor = getElementDescriptor(1)
 	return ObjectSchema(additionalProperties = valueDescriptor.toSchema().toJsonElement())
 }
 
 // Polymorphic fallback: let's just return object schema for now
-internal fun SerialDescriptor.toPolymorphicSchema(): JsonSchema {
+internal fun SerialDescriptor.toPolymorphicSchema(): Schema {
 	return ObjectSchema()
 }
 
-internal fun toPrimitiveSchema(kind: PrimitiveKind): JsonSchema =
+internal fun toPrimitiveSchema(kind: PrimitiveKind): Schema =
 	when (kind) {
 		PrimitiveKind.STRING, PrimitiveKind.CHAR -> StringSchema()
 		PrimitiveKind.BOOLEAN -> BooleanSchema()
@@ -128,7 +128,7 @@ internal fun toPrimitiveSchema(kind: PrimitiveKind): JsonSchema =
 	}
 
 // Enums are just string schema with their enum values as array
-internal fun SerialDescriptor.toEnumSchema(): JsonSchema {
+internal fun SerialDescriptor.toEnumSchema(): Schema {
 	return StringSchema(enum = elementNames.toList())
 }
 

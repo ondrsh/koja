@@ -1,4 +1,4 @@
-package sh.ondr.jsonschema
+package sh.ondr.kojas
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -7,7 +7,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 
 /**
- * Provides a default configuration for encoding [JsonSchema] instances into JSON.
+ * Provides a default configuration for encoding [Schema] instances into JSON.
  */
 object SchemaEncoder {
 	val format = Json {
@@ -17,9 +17,9 @@ object SchemaEncoder {
 }
 
 /**
- * Converts this [JsonSchema] instance into a [JsonElement] using [SchemaEncoder].
+ * Converts this [Schema] instance into a [JsonElement] using [SchemaEncoder].
  */
-fun JsonSchema.toJsonElement(): JsonElement = SchemaEncoder.format.encodeToJsonElement(this)
+fun Schema.toJsonElement(): JsonElement = SchemaEncoder.format.encodeToJsonElement(this)
 
 /**
  * Represents a JSON Schema definition.
@@ -33,7 +33,7 @@ fun JsonSchema.toJsonElement(): JsonElement = SchemaEncoder.format.encodeToJsonE
  * - [BooleanSchema]: Represents a boolean type.
  */
 @Serializable
-sealed class JsonSchema {
+sealed class Schema {
 	/**
 	 * Represents an "object" type schema, describing its properties, required fields, and optionally
 	 * additional properties.
@@ -41,10 +41,10 @@ sealed class JsonSchema {
 	@Serializable
 	@SerialName("object")
 	class ObjectSchema(
-		val properties: Map<String, JsonSchema>? = null,
+		val properties: Map<String, Schema>? = null,
 		val required: List<String>? = null,
 		val additionalProperties: JsonElement? = null,
-	) : JsonSchema()
+	) : Schema()
 
 	/**
 	 * Represents a "string" type schema. The [enum] field, if present, restricts the string to a
@@ -52,7 +52,7 @@ sealed class JsonSchema {
 	 */
 	@Serializable
 	@SerialName("string")
-	class StringSchema(val enum: List<String>? = null) : JsonSchema()
+	class StringSchema(val enum: List<String>? = null) : Schema()
 
 	/**
 	 * Represents a "number" type schema. In JSON Schema, "number" covers both integers and floating
@@ -60,19 +60,19 @@ sealed class JsonSchema {
 	 */
 	@Serializable
 	@SerialName("number")
-	class NumberSchema() : JsonSchema()
+	class NumberSchema() : Schema()
 
 	/**
 	 * Represents an "array" type schema. The [items] field specifies the schema for elements in the array.
 	 */
 	@Serializable
 	@SerialName("array")
-	class ArraySchema(val items: JsonSchema) : JsonSchema()
+	class ArraySchema(val items: Schema) : Schema()
 
 	/**
 	 * Represents a "boolean" type schema.
 	 */
 	@Serializable
 	@SerialName("boolean")
-	class BooleanSchema() : JsonSchema()
+	class BooleanSchema() : Schema()
 }

@@ -1,4 +1,4 @@
-package sh.ondr.jsonschema
+package sh.ondr.kojas
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
