@@ -1,5 +1,6 @@
 package sh.ondr.kojas.ksp.kdoc
 
+import sh.ondr.kojas.KojasMeta
 import java.util.Scanner
 
 private val allowedTags = setOf(
@@ -24,7 +25,7 @@ private fun String.isParamOrProperty() = startsWith("@param") || startsWith("@pr
 fun parseKdoc(
 	kdoc: String,
 	parameters: List<String>,
-): KdocDescription {
+): KojasMeta {
 	val scanner = Scanner(kdoc).apply { useDelimiter("[ \t\n]+") }
 	val tokens = scanner.tokens().toList()
 	tokens.filter { it.startsWith("@") }.forEach { t ->
@@ -95,7 +96,7 @@ fun parseKdoc(
 		}
 	}
 
-	return KdocDescription(
+	return KojasMeta(
 		description = mainDescription,
 		parameterDescriptions = paramDescriptions,
 	)

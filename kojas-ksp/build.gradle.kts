@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+	implementation(project(":kojas-runtime"))
 	implementation(libs.kotlinx.serialization.core)
 	implementation(libs.ksp.api)
 	testImplementation(gradleTestKit())

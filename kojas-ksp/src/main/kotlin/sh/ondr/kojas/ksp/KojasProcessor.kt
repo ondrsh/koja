@@ -10,9 +10,9 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.Origin
+import com.google.devtools.ksp.symbol.KSDeclaration
+import com.google.devtools.ksp.symbol.KSFile
 import kotlinx.serialization.Serializable
-import sh.ondr.kojas.ksp.kdoc.KdocDescription
 import sh.ondr.kojas.ksp.kdoc.parseKdoc
 
 class KojasProcessor(
@@ -20,7 +20,11 @@ class KojasProcessor(
 	val logger: KSPLogger,
 	private val options: Map<String, String>,
 ) : SymbolProcessor {
-	val kdocs = mutableMapOf<String, KdocDescription>()
+	val originatingFiles = mutableListOf<KSFile>()
+	val pkg = "sh.ondr.kojas"
+	val kojasMetaPackage = "$pkg.generated.meta"
+
+	val generatedMetas = mutableListOf<KSDeclaration>()
 
 	override fun process(resolver: Resolver): List<KSAnnotated> {
 		resolver.getSymbolsWithAnnotation("sh.ondr.kojas.JsonSchema")
@@ -28,34 +32,36 @@ class KojasProcessor(
 			.forEach {
 				it.process(it.qualifiedName!!.asString())
 			}
+		generatedMetas.addAll(resolver.getDeclarationsFromPackage(kojasMetaPackage))
 		return listOf()
 	}
 
 	fun KSClassDeclaration.process(root: String) {
 		println("Found annotated class: ${qualifiedName?.asString()}")
 		val paramInfos = getParamInfos()
-		// If there is a KDoc, parse it and put it into map
-		docString?.let { docString ->
-			val kdoc = parseKdoc(
-				kdoc = docString,
-				parameters = paramInfos.map { it.name },
-			)
-			kdocs[qualifiedName!!.asString()] = kdoc
-		}
+
 		// Check for @Serializable children to recurse
+		// TODO validate
 		paramInfos
 			.filter { it.ksType.declaration.isAnnotationPresent(Serializable::class) }
 			.map { it.ksType.declaration }
 			.filterIsInstance<KSClassDeclaration>()
 			.forEach { childClassDeclaration ->
-				// Fail if child class is from another module
-				if (childClassDeclaration.origin != Origin.KOTLIN) {
-					val childClassFq = childClassDeclaration.qualifiedName!!.asString()
-					logger.error("Class ${qualifiedName!!.asString()} has property from another module: $childClassFq")
-				}
 				// Recurse
 				childClassDeclaration.process(root)
 			}
+
+		// If there is a KDoc, parse it and generate the KojasMeta
+		docString?.let { docString ->
+			val kdoc = parseKdoc(
+				kdoc = docString,
+				parameters = paramInfos.map { it.name },
+			)
+			generateKojasMeta(
+				fqName = qualifiedName!!.asString(),
+				kdoc = kdoc,
+			)
+		}
 	}
 
 	fun KSClassDeclaration.getParamInfos(): List<ParamInfo> {
@@ -75,8 +81,9 @@ class KojasProcessor(
 	}
 
 	override fun finish() {
-		kdocs.forEach { (fqName, kdoc) ->
-			println("KDoc for $fqName: $kdoc")
+		// TODO write initializer
+		generatedMetas.forEach { declaration ->
+			println("generated meta: ${declaration.qualifiedName?.asString()}")
 		}
 	}
 }

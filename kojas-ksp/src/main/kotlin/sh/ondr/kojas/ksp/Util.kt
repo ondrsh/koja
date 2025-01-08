@@ -22,3 +22,7 @@ fun KSType.toFqnString(): String {
 	val nullableMark = if (this.isMarkedNullable) "?" else ""
 	return "$decl<$args>$nullableMark"
 }
+
+fun String.toCamelCase(): String {
+	return this.split(".").joinToString("") { it.replaceFirstChar { it.uppercase() } }
+}

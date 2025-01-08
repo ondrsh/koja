@@ -1,6 +1,6 @@
-package sh.ondr.kojas.ksp.kdoc
+package sh.ondr.kojas
 
-data class KdocDescription(
+data class KojasMeta(
 	val description: String?,
 	val parameterDescriptions: Map<String, String>,
 )
