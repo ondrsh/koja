@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+	implementation(libs.kotlinx.serialization.core)
 	implementation(libs.ksp.api)
 	testImplementation(gradleTestKit())
 	testImplementation(kotlin("test-junit5"))
