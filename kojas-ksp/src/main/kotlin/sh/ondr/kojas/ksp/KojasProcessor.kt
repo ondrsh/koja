@@ -10,8 +10,8 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFile
+import com.google.devtools.ksp.symbol.KSName
 import kotlinx.serialization.Serializable
 import sh.ondr.kojas.ksp.kdoc.parseKdoc
 
@@ -23,16 +23,19 @@ class KojasProcessor(
 	val originatingFiles = mutableListOf<KSFile>()
 	val pkg = "sh.ondr.kojas"
 	val kojasMetaPackage = "$pkg.generated.meta"
+	val kojasInitializerPackage = "$pkg.generated.initializer"
 
-	val generatedMetas = mutableListOf<KSDeclaration>()
+	val generatedMetasFqs = mutableSetOf<String>()
+	var moduleName: KSName? = null
 
 	override fun process(resolver: Resolver): List<KSAnnotated> {
+		moduleName = resolver.getModuleName()
 		resolver.getSymbolsWithAnnotation("sh.ondr.kojas.JsonSchema")
 			.filterIsInstance<KSClassDeclaration>()
 			.forEach {
 				it.process(it.qualifiedName!!.asString())
 			}
-		generatedMetas.addAll(resolver.getDeclarationsFromPackage(kojasMetaPackage))
+		generatedMetasFqs.addAll(resolver.getDeclarationsFromPackage(kojasMetaPackage).map { it.qualifiedName?.asString()!! })
 		return listOf()
 	}
 
@@ -47,8 +50,7 @@ class KojasProcessor(
 			.map { it.ksType.declaration }
 			.filterIsInstance<KSClassDeclaration>()
 			.forEach { childClassDeclaration ->
-				// Recurse
-				childClassDeclaration.process(root)
+				// TODO check for validity down the root
 			}
 
 		// If there is a KDoc, parse it and generate the KojasMeta
@@ -81,9 +83,6 @@ class KojasProcessor(
 	}
 
 	override fun finish() {
-		// TODO write initializer
-		generatedMetas.forEach { declaration ->
-			println("generated meta: ${declaration.qualifiedName?.asString()}")
-		}
+		generateInitializer()
 	}
 }
