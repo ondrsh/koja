@@ -13,15 +13,15 @@ dependencyResolutionManagement {
 	}
 }
 
-rootProject.name = "kojas"
+rootProject.name = "koja"
 
-include("kojas-compiler")
-include("kojas-gradle")
-include("kojas-ksp")
-include("kojas-runtime")
+include("koja-compiler")
+include("koja-gradle")
+include("koja-ksp")
+include("koja-runtime")
 
-includeBuild("kojas-build") {
+includeBuild("koja-build") {
 	dependencySubstitution {
-		substitute(module("sh.ondr.kojas:kojas-gradle")).using(project(":gradle-plugin"))
+		substitute(module("sh.ondr.koja:koja-gradle")).using(project(":gradle-plugin"))
 	}
 }
