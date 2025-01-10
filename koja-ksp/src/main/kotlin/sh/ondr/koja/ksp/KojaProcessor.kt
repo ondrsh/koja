@@ -145,7 +145,6 @@ class KojaProcessor(
 
 				// Check class properties recursively
 				decl.getAllProperties().forEach { prop ->
-					println("Processing ${prop.simpleName.asString()}")
 					if (prop.isAnnotationPresent(SerialName::class)) {
 						return "Descendents of @JsonSchema must not be annotated with @SerialName."
 					}
