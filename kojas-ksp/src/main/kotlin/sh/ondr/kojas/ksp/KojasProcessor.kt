@@ -170,6 +170,7 @@ class KojasProcessor(
 				kdoc = docString,
 				parameters = getParamInfos().map { it.name },
 			)
+			originatingFiles.add(containingFile!!)
 			generateKojasMeta(
 				fqName = qualifiedName!!.asString(),
 				kdoc = kdoc,
