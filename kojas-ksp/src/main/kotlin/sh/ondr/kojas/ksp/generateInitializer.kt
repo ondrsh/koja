@@ -20,7 +20,7 @@ fun KojasProcessor.generateInitializer() {
 		appendLine("object $name {")
 		appendLine("  init {")
 		generatedMetasFqs.forEach { fq ->
-			appendLine("  sh.ondr.kojas.KojasRegistry.map[$fq.first] = $fq.second")
+			appendLine("    sh.ondr.kojas.KojasRegistry.map[$fq.first] = $fq.second")
 		}
 		appendLine("  }")
 		appendLine("}")
