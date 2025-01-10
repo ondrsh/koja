@@ -3,7 +3,7 @@
 package sh.ondr.koja
 
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.descriptors.PolymorphicKind
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -64,11 +64,11 @@ import sh.ondr.koja.Schema.StringSchema
  *
  * [T] must be annotated with `@Serializable`. Otherwise, this function will fail at runtime.
  */
-inline fun <reified T : @Serializable Any> jsonSchema(): Schema = serializer<T>().descriptor.toSchema()
+inline fun <reified T : @JsonSchema Any> jsonSchema(): Schema = serializer<T>().descriptor.toSchema()
 
 @PublishedApi
-internal fun SerialDescriptor.toSchema(): Schema =
-	when (kind) {
+internal fun SerialDescriptor.toSchema(): Schema {
+	return when (kind) {
 		is PrimitiveKind -> toPrimitiveSchema(kind as PrimitiveKind)
 		StructureKind.CLASS, StructureKind.OBJECT -> toObjectSchema()
 		StructureKind.LIST -> toArraySchema()
@@ -77,21 +77,43 @@ internal fun SerialDescriptor.toSchema(): Schema =
 		SerialKind.ENUM -> toEnumSchema()
 		SerialKind.CONTEXTUAL -> TODO("Handle contextual")
 	}
+}
 
 internal fun SerialDescriptor.toObjectSchema(): Schema {
+	require(annotations.any { it is JsonSchema }) {
+		"Schema generation requires the @JsonSchema annotation on the class"
+	}
 	val properties = mutableMapOf<String, Schema>()
 	val requiredFields = mutableListOf<String>()
 
-	(0 until elementsCount).forEach { i ->
-		val elementName = getElementName(i)
-		properties[elementName] = getElementDescriptor(i).toSchema()
+	val meta = KojaRegistry.map[serialName]
 
-		if (childRequired(i)) {
+	for (i in 0 until elementsCount) {
+		val elementName = getElementName(i)
+		val childDescriptor = getElementDescriptor(i)
+		val childSchema = childDescriptor.toSchema()
+		val paramDesc = meta?.parameterDescriptions?.get(elementName)
+		val propertyAnnotations = getElementAnnotations(i)
+		val serialNameAnnotation = propertyAnnotations.filterIsInstance<SerialName>().firstOrNull()
+		if (serialNameAnnotation != null) {
+			println("Property $i has @SerialName = ${serialNameAnnotation.value}")
+		}
+
+		properties[elementName] = if (paramDesc != null) {
+			childSchema.withDescription(paramDesc)
+		} else {
+			childSchema
+		}
+
+		// Decide if it’s required
+		if (!isElementOptional(i) && !childDescriptor.isNullable) {
 			requiredFields += elementName
 		}
 	}
 
 	return ObjectSchema(
+		// the class-level description from KojaMeta
+		description = meta?.description,
 		properties = properties,
 		required = requiredFields.ifEmpty { null },
 	)
@@ -137,3 +159,12 @@ internal fun SerialDescriptor.toEnumSchema(): Schema {
 internal fun SerialDescriptor.childRequired(index: Int): Boolean {
 	return isElementOptional(index).not() && getElementDescriptor(index).isNullable.not()
 }
+
+internal fun Schema.withDescription(desc: String): Schema =
+	when (this) {
+		is ObjectSchema -> copy(description = desc)
+		is StringSchema -> copy(description = desc)
+		is NumberSchema -> copy(description = desc)
+		is ArraySchema -> copy(description = desc)
+		is BooleanSchema -> copy(description = desc)
+	}

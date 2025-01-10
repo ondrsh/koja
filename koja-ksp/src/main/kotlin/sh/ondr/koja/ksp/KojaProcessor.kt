@@ -15,6 +15,7 @@ import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSName
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Origin
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import sh.ondr.koja.JsonSchema
 import sh.ondr.koja.ksp.kdoc.parseKdoc
@@ -143,10 +144,14 @@ class KojaProcessor(
 				}
 
 				// Check class properties recursively
-				decl.getParamInfos().forEach {
-					val error = checkTypeError(it.ksType)
+				decl.getAllProperties().forEach { prop ->
+					println("Processing ${prop.simpleName.asString()}")
+					if (prop.isAnnotationPresent(SerialName::class)) {
+						return "Descendents of @JsonSchema must not be annotated with @SerialName."
+					}
+					val error = checkTypeError(prop.type.resolve())
 					if (error != null) {
-						return "Parameter '${it.name}' of class '${classDecl.qualifiedName?.asString()}' is not supported: $error"
+						return "Parameter '${prop.simpleName}' of class '${classDecl.qualifiedName?.asString()}' is not supported: $error"
 					}
 				}
 				validated.add(type)

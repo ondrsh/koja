@@ -34,45 +34,40 @@ fun Schema.toJsonElement(): JsonElement = SchemaEncoder.format.encodeToJsonEleme
  */
 @Serializable
 sealed class Schema {
-	/**
-	 * Represents an "object" type schema, describing its properties, required fields, and optionally
-	 * additional properties.
-	 */
+	abstract val description: String?
+
 	@Serializable
 	@SerialName("object")
-	class ObjectSchema(
+	data class ObjectSchema(
+		override val description: String? = null,
 		val properties: Map<String, Schema>? = null,
 		val required: List<String>? = null,
 		val additionalProperties: JsonElement? = null,
 	) : Schema()
 
-	/**
-	 * Represents a "string" type schema. The [enum] field, if present, restricts the string to a
-	 * predefined set of values.
-	 */
 	@Serializable
 	@SerialName("string")
-	class StringSchema(val enum: List<String>? = null) : Schema()
+	data class StringSchema(
+		override val description: String? = null,
+		val enum: List<String>? = null,
+	) : Schema()
 
-	/**
-	 * Represents a "number" type schema. In JSON Schema, "number" covers both integers and floating
-	 * point numbers.
-	 */
 	@Serializable
 	@SerialName("number")
-	class NumberSchema() : Schema()
+	data class NumberSchema(
+		override val description: String? = null,
+	) : Schema()
 
-	/**
-	 * Represents an "array" type schema. The [items] field specifies the schema for elements in the array.
-	 */
 	@Serializable
 	@SerialName("array")
-	class ArraySchema(val items: Schema) : Schema()
+	data class ArraySchema(
+		override val description: String? = null,
+		val items: Schema,
+	) : Schema()
 
-	/**
-	 * Represents a "boolean" type schema.
-	 */
 	@Serializable
 	@SerialName("boolean")
-	class BooleanSchema() : Schema()
+	data class BooleanSchema(
+		override val description: String? = null,
+	) : Schema()
 }
