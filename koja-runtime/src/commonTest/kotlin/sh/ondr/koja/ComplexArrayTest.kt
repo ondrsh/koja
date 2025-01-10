@@ -7,7 +7,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@Serializable
+@Serializable @JsonSchema
 enum class AdvancedColor {
 	CYAN,
 	MAGENTA,
@@ -15,13 +15,13 @@ enum class AdvancedColor {
 	BLACK,
 }
 
-@Serializable
+@Serializable @JsonSchema
 sealed class AdvancedShape {
-	@Serializable
+	@Serializable @JsonSchema
 	@SerialName("poly_circle")
 	data class PolyCircle(val radius: Double) : AdvancedShape()
 
-	@Serializable
+	@Serializable @JsonSchema
 	@SerialName("poly_triangle")
 	data class PolyTriangle(val base: Double, val height: Double) : AdvancedShape()
 }
@@ -32,7 +32,7 @@ class AdvancedArrayTest {
 		// A structure that nests arrays several levels deep and mixes in maps.
 		// data: List<Map<String, List<List<Int>>>>
 		// For instance: data -> array -> map -> key:string, value: array -> array -> int
-		@Serializable
+		@Serializable @JsonSchema
 		data class DeepMixed(
 			val data: List<Map<String, List<List<Int>>>>,
 		)
@@ -70,7 +70,7 @@ class AdvancedArrayTest {
 	fun testArrayOfPolymorphicShapesWithRenames() {
 		// Arrays of sealed classes. Each item is polymorphic but we only get "type":"object".
 		// We test @SerialName on the sealed subclasses to see if anything changes (it won't, but good to ensure stability).
-		@Serializable
+		@Serializable @JsonSchema
 		data class ShapeCollection(val shapes: List<AdvancedShape>)
 
 		// Polymorphic fallback: items remain { "type":"object" } with no further detail.
@@ -97,7 +97,7 @@ class AdvancedArrayTest {
 	@Test
 	fun testArrayOfArraysOfEnums() {
 		// Even more complex enums: arrays of arrays of AdvancedColor
-		@Serializable
+		@Serializable @JsonSchema
 		data class ColorGrid(
 			val grid: List<List<AdvancedColor>>,
 		)
@@ -131,7 +131,7 @@ class AdvancedArrayTest {
 	@Test
 	fun testArrayWithMultipleOptionalLayers() {
 		// A scenario where arrays are optional, have defaults, and contain nullable elements.
-		@Serializable
+		@Serializable @JsonSchema
 		data class MultiOptionArrays(
 			val optionalNested: List<List<String>>? = listOf(listOf("default")),
 			val nullableContent: List<List<String?>> = listOf(listOf(null, "text")),
@@ -186,13 +186,13 @@ class AdvancedArrayTest {
 		// Very nested scenario:
 		// container: List<AdvancedItem>
 		// AdvancedItem: name:String, metrics:List<Map<String,Double>>
-		@Serializable
+		@Serializable @JsonSchema
 		data class AdvancedItem(
 			val name: String,
 			val metrics: List<Map<String, Double>>,
 		)
 
-		@Serializable
+		@Serializable @JsonSchema
 		data class AdvancedContainer(val container: List<AdvancedItem>)
 
 		// metrics: array of object maps: key=string, value=number
@@ -232,7 +232,7 @@ class AdvancedArrayTest {
 	@Test
 	fun testArrayOfRenamedPropertiesAndEnumsInObjects() {
 		// Introduce @SerialName on array field and enum field:
-		@Serializable
+		@Serializable @JsonSchema
 		data class RenamedEnumHolder(
 			@SerialName("color_values")
 			val colors: List<AdvancedColor>,
@@ -265,7 +265,7 @@ class AdvancedArrayTest {
 	@Test
 	fun testArrayOfPolymorphicWithDefaultsAndNullable() {
 		// Sealed class in array, optional and default, plus nullable inside the shape somehow?
-		@Serializable
+		@Serializable @JsonSchema
 		data class PolymorphicContainer(
 			val shapes: List<AdvancedShape>? = listOf(AdvancedShape.PolyCircle(1.0)),
 		)
@@ -294,14 +294,14 @@ class AdvancedArrayTest {
 	@Test
 	fun testArrayOfObjectsWhereInnerArraysAreOptional() {
 		// Here we have an object with optional arrays inside it.
-		@Serializable
+		@Serializable @JsonSchema
 		data class InnerArrays(
 			val codes: List<String>? = null,
 			val levels: List<Int>? = listOf(1, 2),
 			val tags: List<String> = emptyList(),
 		)
 
-		@Serializable
+		@Serializable @JsonSchema
 		data class MultiArraysHolder(val items: List<InnerArrays> = listOf())
 
 		// Items has default empty list, not required
@@ -349,7 +349,7 @@ class AdvancedArrayTest {
 	fun testCrazyNestedArraysWithEnumsAndMaps() {
 		// Extremely deep nesting:
 		// data: List<List<Map<String, List<AdvancedColor>>>>
-		@Serializable
+		@Serializable @JsonSchema
 		data class CrazyNested(
 			val data: List<List<Map<String, List<AdvancedColor>>>>,
 		)

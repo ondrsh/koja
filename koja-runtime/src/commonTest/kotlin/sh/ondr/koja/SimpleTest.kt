@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 class SimpleTest {
 	@Test
 	fun testSimpleNameClassSchema() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class SimpleNameClass(
 			val name: String,
 		)
@@ -35,7 +35,7 @@ class SimpleTest {
 
 	@Test
 	fun testPrimitiveTypesSchema() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class PrimitiveTypes(
 			val str: String,
 			val bool: Boolean,
@@ -69,7 +69,7 @@ class SimpleTest {
 
 	@Test
 	fun testOptionalFieldsSchema() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class OptionalFields(
 			val mandatory: String,
 			val optionalString: String? = null,
@@ -101,10 +101,10 @@ class SimpleTest {
 
 	@Test
 	fun testNestedObjectsSchema() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class Address(val city: String, val zip: Int)
 
-		@Serializable
+		@Serializable @JsonSchema
 		data class Person(val name: String, val address: Address)
 
 		val expectedSchema =
@@ -134,7 +134,7 @@ class SimpleTest {
 
 	@Test
 	fun testListsSchema() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class ListsExample(
 			val strings: List<String>,
 			val numbers: List<Int>,
@@ -166,7 +166,7 @@ class SimpleTest {
 
 	@Test
 	fun testMapsSchema() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class MapExample(
 			val dict: Map<String, Int>,
 		)
@@ -191,12 +191,12 @@ class SimpleTest {
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
-	@Serializable
+	@Serializable @JsonSchema
 	enum class Color { RED, GREEN, BLUE }
 
 	@Test
 	fun testEnumSchema() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class EnumHolder(val color: Color)
 
 		val expectedSchema =
@@ -219,18 +219,18 @@ class SimpleTest {
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
-	@Serializable
+	@Serializable @JsonSchema
 	sealed class Shape {
-		@Serializable
+		@Serializable @JsonSchema
 		data class Circle(val radius: Double) : Shape()
 
-		@Serializable
+		@Serializable @JsonSchema
 		data class Rectangle(val width: Double, val height: Double) : Shape()
 	}
 
 	@Test
 	fun testSealedClassSchema() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class ShapeHolder(val shape: Shape)
 
 		// Just represent polymorphic as a generic "object" for now
@@ -255,7 +255,7 @@ class SimpleTest {
 
 	@Test
 	fun testFullyOptionalClass() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class FullyOptional(
 			val maybeStr: String? = null,
 			val maybeInt: Int? = null,
@@ -278,15 +278,15 @@ class SimpleTest {
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
-	@Serializable
+	@Serializable @JsonSchema
 	enum class Status { ACTIVE, INACTIVE }
 
 	@Test
 	fun testComplexMixedClass() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class Credentials(val user: String, val token: String?)
 
-		@Serializable
+		@Serializable @JsonSchema
 		data class ComplexClass(
 			val name: String,
 			val age: Int,

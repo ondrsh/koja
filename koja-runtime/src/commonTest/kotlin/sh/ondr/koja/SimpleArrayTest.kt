@@ -1,5 +1,6 @@
 package sh.ondr.koja
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
@@ -11,7 +12,7 @@ class SimpleArrayTest {
 
 	@Test
 	fun testArrayOfPrimitives() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class PrimitiveArrayHolder(
 			val names: List<String>,
 		)
@@ -40,7 +41,7 @@ class SimpleArrayTest {
 
 	@Test
 	fun testArrayOfNumbersWithDefault() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class NumbersWithDefault(
 			val values: List<Int> = listOf(1, 2, 3),
 		)
@@ -68,7 +69,7 @@ class SimpleArrayTest {
 
 	@Test
 	fun testOptionalArrayField() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class OptionalArray(
 			val tags: List<String>? = null,
 		)
@@ -96,7 +97,7 @@ class SimpleArrayTest {
 
 	@Test
 	fun testArrayOfNullableElements() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class NullableElementsArray(
 			val items: List<String?>,
 		)
@@ -125,10 +126,10 @@ class SimpleArrayTest {
 
 	@Test
 	fun testArrayOfObjects() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class Person(val name: String, val age: Int)
 
-		@Serializable
+		@Serializable @JsonSchema
 		data class PeopleHolder(
 			val people: List<Person>,
 		)
@@ -160,12 +161,12 @@ class SimpleArrayTest {
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
-	@Serializable
+	@Serializable @JsonSchema
 	enum class SimpleColor { RED, GREEN, BLUE }
 
 	@Test
 	fun testArrayOfEnums() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class ColorPalette(val colors: List<SimpleColor>)
 
 		val expectedSchema =
@@ -193,9 +194,9 @@ class SimpleArrayTest {
 
 	@Test
 	fun testArrayWithSerialName() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class RenamedField(
-			@kotlinx.serialization.SerialName("user_ids") val userIds: List<Int>,
+			@SerialName("user_ids") val userIds: List<Int>,
 		)
 
 		val expectedSchema =
@@ -222,7 +223,7 @@ class SimpleArrayTest {
 
 	@Test
 	fun testArrayOfMaps() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class MapHolder(val dicts: List<Map<String, Int>>)
 
 		val expectedSchema =
@@ -248,18 +249,18 @@ class SimpleArrayTest {
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
 	}
 
-	@Serializable
+	@Serializable @JsonSchema
 	sealed class SimpleShape {
-		@Serializable
+		@Serializable @JsonSchema
 		data class Circle(val radius: Double) : SimpleShape()
 
-		@Serializable
+		@Serializable @JsonSchema
 		data class Rectangle(val width: Double, val height: Double) : SimpleShape()
 	}
 
 	@Test
 	fun testArrayOfSealedClass() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class ShapesHolder(val shapes: List<SimpleShape>)
 
 		val expectedSchema =
@@ -286,7 +287,7 @@ class SimpleArrayTest {
 
 	@Test
 	fun testArrayWithDefaultsAndNullabilityMixed() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class MixedArray(
 			val strings: List<String>? = listOf("defaultStr"),
 			val numbers: List<Int> = emptyList(),
@@ -322,7 +323,7 @@ class SimpleArrayTest {
 
 	@Test
 	fun testArrayOfArrays() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class NestedArrays(
 			val matrix: List<List<String>>,
 		)
@@ -352,13 +353,13 @@ class SimpleArrayTest {
 
 	@Test
 	fun testArrayOfObjectsWithOptionalFields() {
-		@Serializable
+		@Serializable @JsonSchema
 		data class OptionalFieldsObj(
 			val maybe: String? = null,
 			val defaultNum: Int = 42,
 		)
 
-		@Serializable
+		@Serializable @JsonSchema
 		data class OptionalObjHolder(
 			val elements: List<OptionalFieldsObj>,
 		)
