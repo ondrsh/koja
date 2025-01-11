@@ -127,6 +127,9 @@ class KojaProcessor(
 		// Enums and classes
 		val classDecl = decl as? KSClassDeclaration
 		if (classDecl != null) {
+			if (classDecl.isAnnotationPresent(SerialName::class)) {
+				return "@JsonSchema classes must not be annotated with @SerialName."
+			}
 			if (classDecl.classKind == ClassKind.ENUM_CLASS) {
 				// Enums
 				if (decl.isAnnotationPresent(JsonSchema::class) == false) {
