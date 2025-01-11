@@ -19,6 +19,8 @@ include("koja-compiler")
 include("koja-gradle")
 include("koja-ksp")
 include("koja-runtime")
+include("koja-test-1")
+include("koja-test-2")
 
 includeBuild("koja-build") {
 	dependencySubstitution {
