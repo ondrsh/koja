@@ -3,7 +3,7 @@ package sh.ondr.koja.ksp
 import com.google.devtools.ksp.processing.Dependencies
 
 fun KojaProcessor.generateInitializer() {
-	val name = "${moduleName?.getQualifier()}KojaInitializer"
+	val name = "KojaInitializer"
 	val file = codeGenerator.createNewFile(
 		dependencies = Dependencies(
 			aggregating = true,

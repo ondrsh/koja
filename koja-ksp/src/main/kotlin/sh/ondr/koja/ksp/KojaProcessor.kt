@@ -12,7 +12,6 @@ import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFile
-import com.google.devtools.ksp.symbol.KSName
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Origin
 import kotlinx.serialization.SerialName
@@ -33,10 +32,8 @@ class KojaProcessor(
 	val validated = mutableSetOf<KSType>()
 
 	val generatedMetasFqs = mutableSetOf<String>()
-	var moduleName: KSName? = null
 
 	override fun process(resolver: Resolver): List<KSAnnotated> {
-		moduleName = resolver.getModuleName()
 		// Validate and process
 		resolver.getSymbolsWithAnnotation("sh.ondr.koja.JsonSchema")
 			.filterIsInstance<KSClassDeclaration>()
