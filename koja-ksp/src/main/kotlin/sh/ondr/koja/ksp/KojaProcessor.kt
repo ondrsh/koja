@@ -158,7 +158,7 @@ class KojaProcessor(
 					}
 					val error = checkTypeError(prop.type.resolve())
 					if (error != null) {
-						return "Parameter '${prop.simpleName}' of class '${classDecl.qualifiedName?.asString()}' is not supported: $error"
+						return "Parameter '${prop.simpleName.asString()}' of class '${classDecl.qualifiedName?.asString()}' is not supported: $error"
 					}
 				}
 				validated.add(type)
