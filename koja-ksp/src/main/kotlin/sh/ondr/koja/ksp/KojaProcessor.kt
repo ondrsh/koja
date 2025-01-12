@@ -30,6 +30,7 @@ class KojaProcessor(
 	val kojaMetaPackage = "$pkg.generated.meta"
 	val kojaInitializerPackage = "$pkg.generated.initializer"
 	val validated = mutableSetOf<KSType>()
+	val visitingStack = mutableSetOf<KSType>()
 
 	val generatedMetasFqs = mutableSetOf<String>()
 
@@ -53,6 +54,11 @@ class KojaProcessor(
 	private fun KojaProcessor.checkTypeError(type: KSType): String? {
 		// Skip already processed
 		if (type in validated) {
+			return null
+		}
+
+		// Check for cycles and skip
+		if (type in visitingStack) {
 			return null
 		}
 
@@ -142,6 +148,8 @@ class KojaProcessor(
 				if (decl.isAnnotationPresent(Serializable::class) == false) {
 					return "Classes must be annotated with both @JsonSchema and @Serializable."
 				}
+				// Add to visiting stack
+				visitingStack.add(type)
 
 				// Check class properties recursively
 				decl.getAllProperties().forEach { prop ->
@@ -154,6 +162,7 @@ class KojaProcessor(
 					}
 				}
 				validated.add(type)
+				visitingStack.remove(type)
 				return null
 			}
 			return "Type '${classDecl.qualifiedName?.asString()}' is not a supported primitive, collection, enum, or @JsonSchema class."
