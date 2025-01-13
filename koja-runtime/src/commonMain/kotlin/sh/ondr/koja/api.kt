@@ -66,8 +66,7 @@ import sh.ondr.koja.Schema.StringSchema
  */
 inline fun <reified T : @JsonSchema Any> jsonSchema(): Schema = serializer<T>().descriptor.toSchema()
 
-@PublishedApi
-internal fun SerialDescriptor.toSchema(): Schema {
+fun SerialDescriptor.toSchema(): Schema {
 	return when (kind) {
 		is PrimitiveKind -> toPrimitiveSchema(kind as PrimitiveKind)
 		StructureKind.CLASS, StructureKind.OBJECT -> toObjectSchema()

@@ -19,16 +19,18 @@ class KojaIrTransformer(
 	private val logger: MessageCollector,
 ) : IrElementTransformerVoid() {
 	private val initializerClassId = ClassId.topLevel(FqName("sh.ondr.koja.generated.initializer.KojaInitializer"))
-	private val jsonSchemaFqName = FqName("sh.ondr.koja.jsonSchema")
+	private val functionsToInject = setOf(
+		FqName("sh.ondr.koja.jsonSchema"),
+		FqName("sh.ondr.koja.toSchema"),
+	)
 
 	override fun visitCall(expression: IrCall): IrExpression {
 		expression.transformChildrenVoid()
 
-		// Check if this is a call to the `jsonSchema()` inline function
 		val callee = expression.symbol.owner
 		val functionFqName = callee.fqNameWhenAvailable
-		if (functionFqName == jsonSchemaFqName) {
-			// Found a call to `jsonSchema()`
+
+		if (functionFqName in functionsToInject) {
 			val initializerSymbol = pluginContext.referenceClass(initializerClassId) ?: error("Could not find KojaInitializer class")
 
 			// Insert a reference to KojaInitializer before the call
@@ -39,6 +41,7 @@ class KojaIrTransformer(
 				endOffset = expression.endOffset,
 			)
 
+			// Build a small IR block: first get KojaInitializer, then do the original call
 			return builder.irBlock(expression = expression) {
 				+irGetObject(initializerSymbol)
 				+expression
