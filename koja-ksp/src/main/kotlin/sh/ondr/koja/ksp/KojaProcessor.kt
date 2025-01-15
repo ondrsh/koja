@@ -199,8 +199,8 @@ class KojaProcessor(
 	}
 
 	fun KSClassDeclaration.process(root: String) {
-		if (origin != Origin.KOTLIN) {
-			// Skip files from other modules
+		if (origin == Origin.KOTLIN_LIB || origin == Origin.JAVA_LIB) {
+			// Skip already compiled files
 			return
 		}
 
