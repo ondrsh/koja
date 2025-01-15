@@ -6,20 +6,15 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 
-/**
- * Provides a default configuration for encoding [Schema] instances into JSON.
- */
-object SchemaEncoder {
-	val format = Json {
-		encodeDefaults = true
-		explicitNulls = false
-	}
+val kojaJson = Json {
+	encodeDefaults = true
+	explicitNulls = false
 }
 
 /**
- * Converts this [Schema] instance into a [JsonElement] using [SchemaEncoder].
+ * Converts this [Schema] instance into a [JsonElement].
  */
-fun Schema.toJsonElement(): JsonElement = SchemaEncoder.format.encodeToJsonElement(this)
+fun Schema.toJsonElement(): JsonElement = kojaJson.encodeToJsonElement(this)
 
 /**
  * Represents a JSON Schema definition.
