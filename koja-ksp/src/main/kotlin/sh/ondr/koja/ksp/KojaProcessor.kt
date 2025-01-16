@@ -37,7 +37,13 @@ class KojaProcessor(
 
 	val generatedMetasFqs = mutableSetOf<String>()
 
+	var isTest = false
+
 	override fun process(resolver: Resolver): List<KSAnnotated> {
+		if (resolver.getModuleName().getShortName().endsWith("_test")) {
+			isTest = true
+		}
+
 		// Validate and process
 		resolver.getSymbolsWithAnnotation("sh.ondr.koja.JsonSchema")
 			.filterIsInstance<KSClassDeclaration>()

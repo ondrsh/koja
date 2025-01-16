@@ -93,8 +93,13 @@ class KojaGradlePlugin : KotlinCompilerPluginSupportPlugin {
 
 	override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> {
 		val project = kotlinCompilation.target.project
+		val isTestCompilation = (kotlinCompilation.name == "test")
+
 		return project.provider {
-			listOf(SubpluginOption(key = "enabled", value = "true"))
+			buildList {
+				SubpluginOption("enabled", "true")
+				SubpluginOption("isTestSet", isTestCompilation.toString())
+			}
 		}
 	}
 }

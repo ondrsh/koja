@@ -24,8 +24,13 @@ class KojaCompilerPluginRegistrar : CompilerPluginRegistrar() {
 					moduleFragment: IrModuleFragment,
 					pluginContext: IrPluginContext,
 				) {
+					val moduleName = moduleFragment.descriptor.name.asStringStripSpecialMarkers()
 					moduleFragment.transform(
-						KojaIrTransformer(pluginContext, logger),
+						KojaIrTransformer(
+							isTest = moduleName.endsWith("_test"),
+							pluginContext = pluginContext,
+							logger = logger,
+						),
 						data = null,
 					)
 				}

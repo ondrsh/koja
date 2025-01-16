@@ -15,10 +15,13 @@ import org.jetbrains.kotlin.name.FqName
 
 @OptIn(UnsafeDuringIrConstructionAPI::class)
 class KojaIrTransformer(
+	isTest: Boolean,
 	private val pluginContext: IrPluginContext,
 	private val logger: MessageCollector,
 ) : IrElementTransformerVoid() {
-	private val initializerClassId = ClassId.topLevel(FqName("sh.ondr.koja.generated.initializer.KojaInitializer"))
+	val pkg = "sh.ondr.koja"
+	val initializerFq = if (isTest) "$pkg.generated.initializer.KojaTestInitializer" else "$pkg.generated.initializer.KojaInitializer"
+	private val initializerClassId = ClassId.topLevel(FqName(initializerFq))
 	private val functionsToInject = setOf(
 		FqName("sh.ondr.koja.jsonSchema"),
 		FqName("sh.ondr.koja.toSchema"),
