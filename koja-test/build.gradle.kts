@@ -10,6 +10,11 @@ kotlin {
 	iosArm64()
 	iosSimulatorArm64()
 	iosX64()
+	js(IR) {
+		browser()
+		nodejs()
+		binaries.library()
+	}
 	jvm {
 		compilerOptions {
 			jvmTarget.set(JvmTarget.JVM_11)
@@ -21,6 +26,7 @@ kotlin {
 	sourceSets {
 		commonMain {
 			dependencies {
+				implementation(project("koja-test-nested"))
 				api(libs.kotlinx.serialization.core)
 				api(libs.kotlinx.serialization.json)
 			}

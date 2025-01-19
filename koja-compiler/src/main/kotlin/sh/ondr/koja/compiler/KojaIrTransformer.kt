@@ -27,8 +27,7 @@ class KojaIrTransformer(
 	val initializerFq = if (isTest) "$pkg.generated.initializer.KojaTestInitializer" else "$pkg.generated.initializer.KojaInitializer"
 	private val initializerClassId = ClassId.topLevel(FqName(initializerFq))
 	private val functionsToInject = setOf(
-		FqName("sh.ondr.koja.jsonSchema"),
-		FqName("sh.ondr.koja.toSchema"),
+		FqName("sh.ondr.koja.initializeKoja"),
 	)
 
 	override fun visitCall(expression: IrCall): IrExpression {

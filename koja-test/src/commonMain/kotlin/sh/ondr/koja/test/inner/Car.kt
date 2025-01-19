@@ -1,6 +1,8 @@
-package sh.ondr.koja
+package sh.ondr.koja.test.inner
 
 import kotlinx.serialization.Serializable
+import sh.ondr.koja.JsonSchema
+import sh.ondr.koja.outer.OuterEngine
 
 /**
  * Describes a car
@@ -14,16 +16,6 @@ import kotlinx.serialization.Serializable
 data class Car(
 	val name: String,
 	val wheels: Int,
-	val engine: Engine = Engine("V8"),
+	val engine: OuterEngine = OuterEngine("V8"),
 	val color: Color,
 )
-
-/**
- * A color
- */
-@JsonSchema
-enum class Color {
-	BLUE,
-	RED,
-	GREEN,
-}

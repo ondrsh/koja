@@ -1,6 +1,7 @@
-package sh.ondr.koja
+package sh.ondr.koja.outer
 
 import kotlinx.serialization.Serializable
+import sh.ondr.koja.JsonSchema
 
 /**
  * A class representing an engine
@@ -8,6 +9,6 @@ import kotlinx.serialization.Serializable
  * @property name The name of the engine.
  */
 @Serializable @JsonSchema
-data class Engine(
+data class OuterEngine(
 	val name: String,
 )
