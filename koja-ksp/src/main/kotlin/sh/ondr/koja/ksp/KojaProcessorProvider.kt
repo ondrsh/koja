@@ -9,7 +9,6 @@ class KojaProcessorProvider : SymbolProcessorProvider {
 		return KojaProcessor(
 			codeGenerator = environment.codeGenerator,
 			logger = environment.logger,
-			options = environment.options,
 		)
 	}
 }
