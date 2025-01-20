@@ -1,6 +1,6 @@
 package sh.ondr.koja.test
 
-import sh.ondr.koja.initializeKoja
+import sh.ondr.koja.KojaEntry
 import sh.ondr.koja.jsonSchema
 import sh.ondr.koja.outer.inversion
 import sh.ondr.koja.test.inner.Car
@@ -9,9 +9,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class SimpleTest {
-	@Test
+	@Test @KojaEntry
 	fun inversionTest() {
-		initializeKoja()
 		val carSchema = inversion(Car::class)
 		assertEquals(
 			expected = """
@@ -21,9 +20,8 @@ class SimpleTest {
 		)
 	}
 
-	@Test
+	@Test @KojaEntry
 	fun directTest() {
-		initializeKoja()
 		val carSchema = jsonSchema<Car>()
 		assertEquals(
 			expected = """
