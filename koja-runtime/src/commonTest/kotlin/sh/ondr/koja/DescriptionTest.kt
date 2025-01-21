@@ -29,8 +29,9 @@ class DescriptionTest {
 
 		val actualSchema = jsonSchema<PersonWithDoc>().toJsonElement()
 
-		val expectedSchema = Json.parseToJsonElement(
-			"""
+		val expectedSchema = Json
+			.parseToJsonElement(
+				"""
 			{
 			  "type": "object",
 			  "description": "A class representing a person.",
@@ -46,8 +47,8 @@ class DescriptionTest {
 			  },
 			  "required": ["name", "age"]
 			}
-			""".trimIndent(),
-		).jsonObject
+				""".trimIndent(),
+			).jsonObject
 
 		assertEquals(expectedSchema, actualSchema)
 	}

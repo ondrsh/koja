@@ -66,8 +66,8 @@ import sh.ondr.koja.Schema.StringSchema
  */
 inline fun <reified T : @JsonSchema Any> jsonSchema(): Schema = serializer<T>().descriptor.toSchema()
 
-fun SerialDescriptor.toSchema(): Schema {
-	return when (kind) {
+fun SerialDescriptor.toSchema(): Schema =
+	when (kind) {
 		is PrimitiveKind -> toPrimitiveSchema(kind as PrimitiveKind)
 		StructureKind.CLASS, StructureKind.OBJECT -> toObjectSchema()
 		StructureKind.LIST -> toArraySchema()
@@ -76,7 +76,6 @@ fun SerialDescriptor.toSchema(): Schema {
 		SerialKind.ENUM -> toEnumSchema()
 		SerialKind.CONTEXTUAL -> TODO("Handle contextual")
 	}
-}
 
 internal fun SerialDescriptor.toObjectSchema(): Schema {
 	require(annotations.any { it is JsonSchema }) {
@@ -131,9 +130,7 @@ internal fun SerialDescriptor.toMapSchema(): Schema {
 }
 
 // Polymorphic fallback: let's just return object schema for now
-internal fun SerialDescriptor.toPolymorphicSchema(): Schema {
-	return ObjectSchema()
-}
+internal fun SerialDescriptor.toPolymorphicSchema(): Schema = ObjectSchema()
 
 internal fun toPrimitiveSchema(kind: PrimitiveKind): Schema =
 	when (kind) {
@@ -149,15 +146,11 @@ internal fun toPrimitiveSchema(kind: PrimitiveKind): Schema =
 	}
 
 // Enums are just string schema with their enum values as array
-internal fun SerialDescriptor.toEnumSchema(): Schema {
-	return StringSchema(enum = elementNames.toList())
-}
+internal fun SerialDescriptor.toEnumSchema(): Schema = StringSchema(enum = elementNames.toList())
 
 // A field is considered required if it is neither optional nor nullable.
 // This aligns with the library’s opinionated definition of "required".
-internal fun SerialDescriptor.childRequired(index: Int): Boolean {
-	return isElementOptional(index).not() && getElementDescriptor(index).isNullable.not()
-}
+internal fun SerialDescriptor.childRequired(index: Int): Boolean = isElementOptional(index).not() && getElementDescriptor(index).isNullable.not()
 
 internal fun Schema.withDescription(desc: String): Schema =
 	when (this) {

@@ -19,11 +19,16 @@ enum class AdvancedColor {
 sealed class AdvancedShape {
 	@Serializable @JsonSchema
 	@SerialName("poly_circle")
-	data class PolyCircle(val radius: Double) : AdvancedShape()
+	data class PolyCircle(
+		val radius: Double,
+	) : AdvancedShape()
 
 	@Serializable @JsonSchema
 	@SerialName("poly_triangle")
-	data class PolyTriangle(val base: Double, val height: Double) : AdvancedShape()
+	data class PolyTriangle(
+		val base: Double,
+		val height: Double,
+	) : AdvancedShape()
 }
 
 class AdvancedArrayTest {
@@ -38,8 +43,9 @@ class AdvancedArrayTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -59,8 +65,8 @@ class AdvancedArrayTest {
 				  },
 				  "required":["data"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<DeepMixed>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -71,12 +77,15 @@ class AdvancedArrayTest {
 		// Arrays of sealed classes. Each item is polymorphic but we only get "type":"object".
 		// We test @SerialName on the sealed subclasses to see if anything changes (it won't, but good to ensure stability).
 		@Serializable @JsonSchema
-		data class ShapeCollection(val shapes: List<AdvancedShape>)
+		data class ShapeCollection(
+			val shapes: List<AdvancedShape>,
+		)
 
 		// Polymorphic fallback: items remain { "type":"object" } with no further detail.
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type":"object",
 				  "properties": {
@@ -87,8 +96,8 @@ class AdvancedArrayTest {
 				  },
 				  "required":["shapes"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<ShapeCollection>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -103,8 +112,9 @@ class AdvancedArrayTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type":"object",
 				  "properties":{
@@ -121,8 +131,8 @@ class AdvancedArrayTest {
 				  },
 				  "required":["grid"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<ColorGrid>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -143,8 +153,9 @@ class AdvancedArrayTest {
 		// defaultEmpty has a default empty list, not required.
 		// Everything ends up optional due to defaults.
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type":"object",
 				  "properties":{
@@ -174,8 +185,8 @@ class AdvancedArrayTest {
 				    }
 				  }
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<MultiOptionArrays>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -193,12 +204,15 @@ class AdvancedArrayTest {
 		)
 
 		@Serializable @JsonSchema
-		data class AdvancedContainer(val container: List<AdvancedItem>)
+		data class AdvancedContainer(
+			val container: List<AdvancedItem>,
+		)
 
 		// metrics: array of object maps: key=string, value=number
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type":"object",
 				  "properties":{
@@ -222,8 +236,8 @@ class AdvancedArrayTest {
 				  },
 				  "required":["container"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<AdvancedContainer>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -240,8 +254,9 @@ class AdvancedArrayTest {
 
 		// colors is required
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type":"object",
 				  "properties":{
@@ -255,8 +270,8 @@ class AdvancedArrayTest {
 				  },
 				  "required":["color_values"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<RenamedEnumHolder>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -273,8 +288,9 @@ class AdvancedArrayTest {
 		// shapes has a default, so not required.
 		// Polymorphic items still "object"
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type":"object",
 				  "properties":{
@@ -284,8 +300,8 @@ class AdvancedArrayTest {
 				    }
 				  }
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<PolymorphicContainer>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -302,7 +318,9 @@ class AdvancedArrayTest {
 		)
 
 		@Serializable @JsonSchema
-		data class MultiArraysHolder(val items: List<InnerArrays> = listOf())
+		data class MultiArraysHolder(
+			val items: List<InnerArrays> = listOf(),
+		)
 
 		// Items has default empty list, not required
 		// Inside items:
@@ -311,8 +329,9 @@ class AdvancedArrayTest {
 		// - tags: default empty -> not required
 		// So no required fields in the item schema.
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type":"object",
 				  "properties":{
@@ -338,8 +357,8 @@ class AdvancedArrayTest {
 				    }
 				  }
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<MultiArraysHolder>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -355,8 +374,9 @@ class AdvancedArrayTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type":"object",
 				  "properties":{
@@ -379,8 +399,8 @@ class AdvancedArrayTest {
 				  },
 				  "required":["data"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<CrazyNested>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())

@@ -23,6 +23,4 @@ fun KSType.toFqnString(): String {
 	return "$decl<$args>$nullableMark"
 }
 
-fun String.toCamelCase(): String {
-	return this.split(".").joinToString("") { it.replaceFirstChar { it.uppercase() } }
-}
+fun String.toCamelCase(): String = this.split(".").joinToString("") { it.replaceFirstChar { it.uppercase() } }

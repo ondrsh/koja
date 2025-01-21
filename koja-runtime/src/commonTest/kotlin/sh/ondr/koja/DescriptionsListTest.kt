@@ -42,8 +42,9 @@ class DescriptionListTest {
 		)
 
 		val actualSchema = jsonSchema<EmployeeListHolder>().toJsonElement()
-		val expectedSchema = Json.parseToJsonElement(
-			"""
+		val expectedSchema = Json
+			.parseToJsonElement(
+				"""
 			{
 			  "type": "object",
 			  "description": "Holds a list of employees.",
@@ -70,8 +71,8 @@ class DescriptionListTest {
 			  },
 			  "required": ["employees"]
 			}
-			""".trimIndent(),
-		).jsonObject
+				""".trimIndent(),
+			).jsonObject
 
 		// 5) Compare
 		assertEquals(expectedSchema, actualSchema)

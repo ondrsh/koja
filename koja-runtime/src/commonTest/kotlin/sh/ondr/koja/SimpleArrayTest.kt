@@ -18,8 +18,9 @@ class SimpleArrayTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -32,8 +33,8 @@ class SimpleArrayTest {
 				  },
 				  "required": ["names"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<PrimitiveArrayHolder>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -47,8 +48,9 @@ class SimpleArrayTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -60,8 +62,8 @@ class SimpleArrayTest {
 				    }
 				  }
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<NumbersWithDefault>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -75,8 +77,9 @@ class SimpleArrayTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -88,8 +91,8 @@ class SimpleArrayTest {
 				    }
 				  }
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<OptionalArray>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -103,8 +106,9 @@ class SimpleArrayTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -117,8 +121,8 @@ class SimpleArrayTest {
 				  },
 				  "required": ["items"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<NullableElementsArray>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -127,7 +131,10 @@ class SimpleArrayTest {
 	@Test
 	fun testArrayOfObjects() {
 		@Serializable @JsonSchema
-		data class Person(val name: String, val age: Int)
+		data class Person(
+			val name: String,
+			val age: Int,
+		)
 
 		@Serializable @JsonSchema
 		data class PeopleHolder(
@@ -135,8 +142,9 @@ class SimpleArrayTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -154,8 +162,8 @@ class SimpleArrayTest {
 				  },
 				  "required": ["people"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<PeopleHolder>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -167,11 +175,14 @@ class SimpleArrayTest {
 	@Test
 	fun testArrayOfEnums() {
 		@Serializable @JsonSchema
-		data class ColorPalette(val colors: List<SimpleColor>)
+		data class ColorPalette(
+			val colors: List<SimpleColor>,
+		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -185,8 +196,8 @@ class SimpleArrayTest {
 				  },
 				  "required":["colors"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<ColorPalette>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -200,8 +211,9 @@ class SimpleArrayTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -214,8 +226,8 @@ class SimpleArrayTest {
 				  },
 				  "required":["user_ids"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<RenamedField>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -224,11 +236,14 @@ class SimpleArrayTest {
 	@Test
 	fun testArrayOfMaps() {
 		@Serializable @JsonSchema
-		data class MapHolder(val dicts: List<Map<String, Int>>)
+		data class MapHolder(
+			val dicts: List<Map<String, Int>>,
+		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -242,8 +257,8 @@ class SimpleArrayTest {
 				  },
 				  "required":["dicts"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<MapHolder>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -252,20 +267,28 @@ class SimpleArrayTest {
 	@Serializable @JsonSchema
 	sealed class SimpleShape {
 		@Serializable @JsonSchema
-		data class Circle(val radius: Double) : SimpleShape()
+		data class Circle(
+			val radius: Double,
+		) : SimpleShape()
 
 		@Serializable @JsonSchema
-		data class Rectangle(val width: Double, val height: Double) : SimpleShape()
+		data class Rectangle(
+			val width: Double,
+			val height: Double,
+		) : SimpleShape()
 	}
 
 	@Test
 	fun testArrayOfSealedClass() {
 		@Serializable @JsonSchema
-		data class ShapesHolder(val shapes: List<SimpleShape>)
+		data class ShapesHolder(
+			val shapes: List<SimpleShape>,
+		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type":"object",
 				  "properties": {
@@ -278,8 +301,8 @@ class SimpleArrayTest {
 				  },
 				  "required":["shapes"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<ShapesHolder>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -295,8 +318,9 @@ class SimpleArrayTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type":"object",
 				  "properties": {
@@ -314,8 +338,8 @@ class SimpleArrayTest {
 				    }
 				  }
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<MixedArray>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -329,8 +353,9 @@ class SimpleArrayTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type":"object",
 				  "properties": {
@@ -344,8 +369,8 @@ class SimpleArrayTest {
 				  },
 				  "required":["matrix"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<NestedArrays>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -365,8 +390,9 @@ class SimpleArrayTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type":"object",
 				  "properties":{
@@ -383,8 +409,8 @@ class SimpleArrayTest {
 				  },
 				  "required":["elements"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<OptionalObjHolder>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())

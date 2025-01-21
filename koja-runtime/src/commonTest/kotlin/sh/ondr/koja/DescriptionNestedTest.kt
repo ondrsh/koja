@@ -44,8 +44,9 @@ class DescriptionNestedTest {
 		val actualSchema = jsonSchema<PersonWithAddress>().toJsonElement()
 
 		// Expected JSON schema
-		val expectedSchema = Json.parseToJsonElement(
-			"""
+		val expectedSchema = Json
+			.parseToJsonElement(
+				"""
 			{
 			  "type": "object",
 			  "description": "Represents a person.",
@@ -72,8 +73,8 @@ class DescriptionNestedTest {
 			  },
 			  "required": ["name", "address"]
 			}
-			""".trimIndent(),
-		).jsonObject
+				""".trimIndent(),
+			).jsonObject
 
 		assertEquals(expectedSchema, actualSchema)
 	}

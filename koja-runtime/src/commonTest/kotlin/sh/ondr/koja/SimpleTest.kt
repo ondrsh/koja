@@ -15,8 +15,9 @@ class SimpleTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -26,8 +27,8 @@ class SimpleTest {
 				  },
 				  "required": ["name"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<SimpleNameClass>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -46,8 +47,9 @@ class SimpleTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -60,8 +62,8 @@ class SimpleTest {
 				  },
 				  "required": ["str", "bool", "intVal", "doubleVal", "longVal", "charVal"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<PrimitiveTypes>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -80,8 +82,9 @@ class SimpleTest {
 		// "nullableInt" is also optional (no default, but nullable)
 		// "optionalString", "nullableInt" and "defaultInt" should not be required
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -92,8 +95,8 @@ class SimpleTest {
 				  },
 				  "required": ["mandatory"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<OptionalFields>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -102,14 +105,21 @@ class SimpleTest {
 	@Test
 	fun testNestedObjectsSchema() {
 		@Serializable @JsonSchema
-		data class Address(val city: String, val zip: Int)
+		data class Address(
+			val city: String,
+			val zip: Int,
+		)
 
 		@Serializable @JsonSchema
-		data class Person(val name: String, val address: Address)
+		data class Person(
+			val name: String,
+			val address: Address,
+		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -125,8 +135,8 @@ class SimpleTest {
 				  },
 				  "required": ["name", "address"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<Person>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -141,8 +151,9 @@ class SimpleTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -157,8 +168,8 @@ class SimpleTest {
 				  },
 				  "required": ["strings", "numbers"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<ListsExample>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -172,8 +183,9 @@ class SimpleTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -184,8 +196,8 @@ class SimpleTest {
 				  },
 				  "required": ["dict"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<MapExample>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -197,11 +209,14 @@ class SimpleTest {
 	@Test
 	fun testEnumSchema() {
 		@Serializable @JsonSchema
-		data class EnumHolder(val color: Color)
+		data class EnumHolder(
+			val color: Color,
+		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -212,8 +227,8 @@ class SimpleTest {
 				  },
 				  "required": ["color"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<EnumHolder>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -222,21 +237,29 @@ class SimpleTest {
 	@Serializable @JsonSchema
 	sealed class Shape {
 		@Serializable @JsonSchema
-		data class Circle(val radius: Double) : Shape()
+		data class Circle(
+			val radius: Double,
+		) : Shape()
 
 		@Serializable @JsonSchema
-		data class Rectangle(val width: Double, val height: Double) : Shape()
+		data class Rectangle(
+			val width: Double,
+			val height: Double,
+		) : Shape()
 	}
 
 	@Test
 	fun testSealedClassSchema() {
 		@Serializable @JsonSchema
-		data class ShapeHolder(val shape: Shape)
+		data class ShapeHolder(
+			val shape: Shape,
+		)
 
 		// Just represent polymorphic as a generic "object" for now
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -246,8 +269,8 @@ class SimpleTest {
 				  },
 				  "required": ["shape"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<ShapeHolder>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -262,8 +285,9 @@ class SimpleTest {
 		)
 
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -271,8 +295,8 @@ class SimpleTest {
 				    "maybeInt": { "type": "number" }
 				  }
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<FullyOptional>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
@@ -284,7 +308,10 @@ class SimpleTest {
 	@Test
 	fun testComplexMixedClass() {
 		@Serializable @JsonSchema
-		data class Credentials(val user: String, val token: String?)
+		data class Credentials(
+			val user: String,
+			val token: String?,
+		)
 
 		@Serializable @JsonSchema
 		data class ComplexClass(
@@ -301,8 +328,9 @@ class SimpleTest {
 		// tags is nullable (not required)
 		// attributes has a default map, so not required
 		val expectedSchema =
-			Json.parseToJsonElement(
-				"""
+			Json
+				.parseToJsonElement(
+					"""
 				{
 				  "type": "object",
 				  "properties": {
@@ -331,8 +359,8 @@ class SimpleTest {
 				  },
 				  "required": ["name", "age"]
 				}
-				""".trimIndent(),
-			).jsonObject
+					""".trimIndent(),
+				).jsonObject
 
 		val actualSchema = jsonSchema<ComplexClass>()
 		assertEquals(expectedSchema, actualSchema.toJsonElement())
