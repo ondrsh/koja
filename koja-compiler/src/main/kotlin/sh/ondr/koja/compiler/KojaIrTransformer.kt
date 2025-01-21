@@ -60,8 +60,12 @@ class KojaIrTransformer(
 
 		val callee = expression.symbol.owner
 		val isNamedBuilder = callee.constructedClass.name.asString() == "Builder"
-		val isInServer = callee.constructedClass.parentClassOrNull?.name?.asString() == "Server"
-		val isInRuntimePackage = callee.constructedClass.parentClassOrNull?.packageFqName?.asString() == "sh.ondr.kmcp.runtime"
+		val isInServer = callee.constructedClass.parentClassOrNull
+			?.name
+			?.asString() == "Server"
+		val isInRuntimePackage = callee.constructedClass.parentClassOrNull
+			?.packageFqName
+			?.asString() == "sh.ondr.mcp4k.runtime"
 		if (isNamedBuilder && isInServer && isInRuntimePackage) {
 			val initializerSymbol = pluginContext.referenceClass(initializerClassId) ?: error("Could not find KojaInitializer")
 
