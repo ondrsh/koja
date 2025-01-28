@@ -2,6 +2,7 @@ package sh.ondr.koja.ksp.kdoc
 
 import sh.ondr.koja.KojaMeta
 import java.util.Scanner
+import kotlin.streams.asSequence
 
 private val allowedTags = setOf(
 	"@param",
@@ -27,7 +28,7 @@ fun parseKdoc(
 	parameters: List<String>,
 ): KojaMeta {
 	val scanner = Scanner(kdoc).apply { useDelimiter("[ \t\n]+") }
-	val tokens = scanner.tokens().toList()
+	val tokens = scanner.tokens().asSequence().toList()
 	tokens.filter { it.startsWith("@") }.forEach { t ->
 		if (t !in allowedTags) {
 			throw IllegalArgumentException(
