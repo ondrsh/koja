@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
 	id("java-gradle-plugin")
 	alias(libs.plugins.build.config)
@@ -42,4 +44,12 @@ if (rootProject.name != "koja") {
 // Only publish from real build
 if (rootProject.name == "koja") {
 	apply(plugin = "com.vanniktech.maven.publish")
+}
+
+java {
+	toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+	compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
 }

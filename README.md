@@ -71,7 +71,7 @@ Add koja and the serialization plugin to your plugins block:
 plugins {
   kotlin("multiplatform") version "2.1.0" // or kotlin("jvm")
   kotlin("plugin.serialization") version "2.1.0"
-  id("sh.ondr.koja") version "0.3.0"
+  id("sh.ondr.koja") version "0.3.1"
 }
 ```
 
