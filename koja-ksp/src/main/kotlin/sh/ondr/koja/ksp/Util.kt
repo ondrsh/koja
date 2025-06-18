@@ -24,3 +24,19 @@ fun KSType.toFqnString(): String {
 }
 
 fun String.toCamelCase(): String = this.split(".").joinToString("") { it.replaceFirstChar { it.uppercase() } }
+
+/**
+ * Escapes a string for safe inclusion in a Kotlin string literal.
+ * This handles all special characters that have meaning in Kotlin strings.
+ */
+fun String.escapeForKotlinString(): String {
+	return this
+		.replace("\\", "\\\\") // Escape backslashes first to avoid double-escaping
+		.replace("\"", "\\\"") // Escape double quotes
+		.replace("$", "\\$") // Escape dollar signs to prevent string interpolation
+		.replace("\n", "\\n") // Escape newlines
+		.replace("\r", "\\r") // Escape carriage returns
+		.replace("\t", "\\t") // Escape tabs
+		.replace("\b", "\\b") // Escape backspace
+		.replace("\u000C", "\\u000C") // Escape form feed
+}

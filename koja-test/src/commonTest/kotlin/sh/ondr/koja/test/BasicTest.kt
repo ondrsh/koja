@@ -8,7 +8,7 @@ import sh.ondr.koja.toJsonElement
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class SimpleTest {
+class BasicTest {
 	@Test @KojaEntry
 	fun inversionTest() {
 		val carSchema = inversion(Car::class)

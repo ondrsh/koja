@@ -22,10 +22,10 @@ fun KojaProcessor.generateKojaMeta(
 		appendLine("package $kojaMetaPackage")
 		appendLine()
 		appendLine("val $propertyName =")
-		appendLine("  \"${fqName}\" to sh.ondr.koja.KojaMeta(")
-		appendLine("    description = \"${kdoc.description}\",")
+		appendLine("  \"${fqName.escapeForKotlinString()}\" to sh.ondr.koja.KojaMeta(")
+		appendLine("    description = \"${kdoc.description?.escapeForKotlinString()}\",")
 		appendLine("    parameterDescriptions = mapOf(")
-		appendLine("      ${kdoc.parameterDescriptions.entries.joinToString(",\n      ") { "\"${it.key}\" to \"${it.value}\"" }}")
+		appendLine("      ${kdoc.parameterDescriptions.entries.joinToString(",\n      ") { "\"${it.key.escapeForKotlinString()}\" to \"${it.value.escapeForKotlinString()}\"" }}")
 		appendLine("    )")
 		appendLine("  )")
 	}
