@@ -3,7 +3,6 @@
 package sh.ondr.koja
 
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.descriptors.PolymorphicKind
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -91,11 +90,6 @@ internal fun SerialDescriptor.toObjectSchema(): Schema {
 		val childDescriptor = getElementDescriptor(i)
 		val childSchema = childDescriptor.toSchema()
 		val paramDesc = meta?.parameterDescriptions?.get(elementName)
-		val propertyAnnotations = getElementAnnotations(i)
-		val serialNameAnnotation = propertyAnnotations.filterIsInstance<SerialName>().firstOrNull()
-		if (serialNameAnnotation != null) {
-			println("Property $i has @SerialName = ${serialNameAnnotation.value}")
-		}
 
 		properties[elementName] = if (paramDesc != null) {
 			childSchema.withDescription(paramDesc)
