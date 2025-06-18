@@ -71,7 +71,7 @@ Add koja and the serialization plugin to your plugins block:
 plugins {
   kotlin("multiplatform") version "2.1.0" // or kotlin("jvm")
   kotlin("plugin.serialization") version "2.1.0"
-  id("sh.ondr.koja") version "0.3.2"
+  id("sh.ondr.koja") version "0.4.0"
 }
 ```
 
@@ -140,6 +140,7 @@ Enums become <code>string</code> schemas with <code>enum</code> arrays.
 ## TODO
 - ✅ Validate map key types
 - ✅ Property descriptions (KDocs)
+- ✅ Proper escaping or special characters
 - ⬜ References
 - ⬜ Fine-grained number types (integers vs numbers)
 - ⬜ Advanced validation keywords (e.g. patterns)
