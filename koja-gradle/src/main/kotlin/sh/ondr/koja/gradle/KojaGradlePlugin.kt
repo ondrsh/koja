@@ -1,9 +1,11 @@
 package sh.ondr.koja.gradle
 
 import com.google.auto.service.AutoService
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
@@ -12,11 +14,16 @@ import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 @AutoService(KotlinCompilerPluginSupportPlugin::class)
 class KojaGradlePlugin : KotlinCompilerPluginSupportPlugin {
 	override fun apply(target: Project) {
+		// Check Kotlin version
+		target.checkKotlinVersion()
+		
+		// Apply KSP if not already applied
+		if (!target.plugins.hasPlugin("com.google.devtools.ksp")) {
+			target.pluginManager.apply("com.google.devtools.ksp")
+		}
+		
 		val kspDependency = target.getKspDependency()
 		val runtimeDependency = target.getRuntimeDependency()
-
-		// Apply in any case
-		target.pluginManager.apply("com.google.devtools.ksp")
 
 		// Apply to Kotlin Multiplatform projects
 		target.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
@@ -100,6 +107,44 @@ class KojaGradlePlugin : KotlinCompilerPluginSupportPlugin {
 				SubpluginOption("enabled", "true")
 				SubpluginOption("isTestSet", isTestCompilation.toString())
 			}
+		}
+	}
+
+	private fun Project.checkKotlinVersion() {
+		var validated = false
+		
+		// Runs immediately if the user applied Kotlin before Koja
+		plugins.withType(KotlinBasePluginWrapper::class.java) {
+			validateKotlinVersion(it.pluginVersion)
+			validated = true
+		}
+		
+		// Runs if Kotlin is applied *after* Koja
+		pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") { recheck() }
+		pluginManager.withPlugin("org.jetbrains.kotlin.jvm") { recheck() }
+		pluginManager.withPlugin("org.jetbrains.kotlin.android") { recheck() }
+		
+		afterEvaluate {
+			if (!validated) {
+				throw GradleException(
+					"Koja needs the Kotlin plugin $REQUIRED_KOTLIN_VERSION but no Kotlin plugin was applied.",
+				)
+			}
+		}
+	}
+
+	private fun Project.recheck() {
+		plugins.withType(KotlinBasePluginWrapper::class.java) {
+			validateKotlinVersion(it.pluginVersion)
+		}
+	}
+
+	private fun validateKotlinVersion(actual: String) {
+		if (actual != REQUIRED_KOTLIN_VERSION) {
+			throw GradleException(
+				"Koja $PLUGIN_VERSION requires Kotlin $REQUIRED_KOTLIN_VERSION but found $actual. " +
+					"Please upgrade the Kotlin Gradle plugin.",
+			)
 		}
 	}
 }

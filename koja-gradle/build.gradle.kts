@@ -12,8 +12,8 @@ dependencies {
 	compileOnly(libs.auto.service.annotations)
 	compileOnly(libs.kotlin.compiler.embeddable)
 	implementation(libs.kotlin.stdlib)
-	implementation(libs.kotlin.gradle.api)
-	implementation(libs.kotlin.gradle.plugin)
+	compileOnly(libs.kotlin.gradle.api)
+	compileOnly(libs.kotlin.gradle.plugin)
 	implementation(libs.ksp.gradle.plugin)
 }
 
@@ -24,6 +24,8 @@ buildConfig {
 	}
 	packageName("sh.ondr.koja.gradle")
 	buildConfigField("String", "PLUGIN_VERSION", "\"$version\"")
+	buildConfigField("String", "REQUIRED_KOTLIN_VERSION", "\"${libs.versions.kotlin.get()}\"")
+	buildConfigField("String", "REQUIRED_KSP_VERSION", "\"${libs.versions.ksp.api.get()}\"")
 }
 
 gradlePlugin {
