@@ -2,6 +2,7 @@ package sh.ondr.koja.gradle
 
 import com.google.auto.service.AutoService
 import org.gradle.api.GradleException
+import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -16,12 +17,10 @@ class KojaGradlePlugin : KotlinCompilerPluginSupportPlugin {
 	override fun apply(target: Project) {
 		// Check Kotlin version
 		target.checkKotlinVersion()
-		
-		// Apply KSP if not already applied
-		if (!target.plugins.hasPlugin("com.google.devtools.ksp")) {
-			target.pluginManager.apply("com.google.devtools.ksp")
-		}
-		
+
+		// Check KSP version and apply if needed
+		target.checkKspVersion()
+
 		val kspDependency = target.getKspDependency()
 		val runtimeDependency = target.getRuntimeDependency()
 
@@ -112,18 +111,18 @@ class KojaGradlePlugin : KotlinCompilerPluginSupportPlugin {
 
 	private fun Project.checkKotlinVersion() {
 		var validated = false
-		
+
 		// Runs immediately if the user applied Kotlin before Koja
 		plugins.withType(KotlinBasePluginWrapper::class.java) {
 			validateKotlinVersion(it.pluginVersion)
 			validated = true
 		}
-		
+
 		// Runs if Kotlin is applied *after* Koja
 		pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") { recheck() }
 		pluginManager.withPlugin("org.jetbrains.kotlin.jvm") { recheck() }
 		pluginManager.withPlugin("org.jetbrains.kotlin.android") { recheck() }
-		
+
 		afterEvaluate {
 			if (!validated) {
 				throw GradleException(
@@ -146,5 +145,42 @@ class KojaGradlePlugin : KotlinCompilerPluginSupportPlugin {
 					"Please upgrade the Kotlin Gradle plugin.",
 			)
 		}
+	}
+
+	private fun Project.checkKspVersion() {
+		// Skip version check for internal build
+		if (isInternalBuild()) {
+			pluginManager.apply("com.google.devtools.ksp")
+			return
+		}
+
+		// This will run immediately if KSP was already applied, or when it gets applied
+		pluginManager.withPlugin("com.google.devtools.ksp") {
+			val actual = plugins
+				.findPlugin("com.google.devtools.ksp")
+				?.resolvedVersion()
+				?: "<unknown>"
+
+			if (actual != REQUIRED_KSP_VERSION && actual != "<unknown>") {
+				throw GradleException(
+					"Koja $PLUGIN_VERSION requires KSP $REQUIRED_KSP_VERSION but Gradle resolved $actual. " +
+						"Please remove the KSP plugin from your build configuration and let Koja handle it.",
+				)
+			}
+		}
+
+		// Apply KSP ourselves (will be a no-op if user already declared it)
+		pluginManager.apply("com.google.devtools.ksp")
+	}
+
+	private fun Plugin<*>.resolvedVersion(): String? {
+		// Extract version from jar filename
+		return runCatching {
+			val path = javaClass.protectionDomain.codeSource.location.path
+			Regex("""symbol-processing-gradle-plugin-(.+?)\.jar""")
+				.find(path)
+				?.groupValues
+				?.get(1)
+		}.getOrNull()
 	}
 }
