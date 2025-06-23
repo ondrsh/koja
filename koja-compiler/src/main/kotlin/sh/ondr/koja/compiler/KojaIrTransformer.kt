@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.expressions.IrBlockBody
 import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.ir.util.constructedClass
 import org.jetbrains.kotlin.ir.util.isAnnotation
@@ -21,13 +22,22 @@ import org.jetbrains.kotlin.name.FqName
 
 @OptIn(UnsafeDuringIrConstructionAPI::class)
 class KojaIrTransformer(
-	isTest: Boolean,
+	moduleName: String,
 	private val pluginContext: IrPluginContext,
 	private val logger: MessageCollector,
 ) : IrElementTransformerVoid() {
-	val pkg = "sh.ondr.koja"
-	val initializerFq = if (isTest) "$pkg.generated.initializer.KojaTestInitializer" else "$pkg.generated.initializer.KojaInitializer"
-	private val initializerClassId = ClassId.topLevel(FqName(initializerFq))
+	val moduleId = moduleName
+		.replace(
+			Regex("""^([A-Za-z0-9]+)-\1-"""),
+			"$1-",
+		).replace(Regex("[^A-Za-z0-9_]"), "_") // dash → _
+		.replace(Regex("_+"), "_") // squeeze
+		.trim('_') // tidy
+
+	val initSymbol: IrClassSymbol = FqName("sh.ondr.koja.generated.initializer.KojaInitializer_$moduleId").let { fqName ->
+		val classId = ClassId.topLevel(fqName)
+		pluginContext.referenceClass(classId) ?: error("Could not find KojaInitializer $fqName in IR")
+	}
 
 	override fun visitSimpleFunction(declaration: IrSimpleFunction): IrStatement {
 		declaration.transformChildrenVoid()
@@ -42,12 +52,10 @@ class KojaIrTransformer(
 					declaration.startOffset,
 					declaration.endOffset,
 				)
-				val initializerSymbol = pluginContext.referenceClass(initializerClassId) ?: error("Could not find KojaInitializer")
-
 				// Prepend reference to initializer
 				body.statements.add(
 					index = 0,
-					element = builder.irGetObject(initializerSymbol),
+					element = builder.irGetObject(initSymbol),
 				)
 			}
 		}
@@ -67,18 +75,15 @@ class KojaIrTransformer(
 			?.packageFqName
 			?.asString() == "sh.ondr.mcp4k.runtime"
 		if (isNamedBuilder && isInServer && isInRuntimePackage) {
-			val initializerSymbol = pluginContext.referenceClass(initializerClassId) ?: error("Could not find KojaInitializer")
-
-			val builder =
-				DeclarationIrBuilder(
-					generatorContext = pluginContext,
-					symbol = callee.symbol,
-					startOffset = expression.startOffset,
-					endOffset = expression.endOffset,
-				)
+			val builder = DeclarationIrBuilder(
+				generatorContext = pluginContext,
+				symbol = callee.symbol,
+				startOffset = expression.startOffset,
+				endOffset = expression.endOffset,
+			)
 
 			return builder.irBlock(expression = expression) {
-				+irGetObject(initializerSymbol)
+				+irGetObject(initSymbol)
 				+expression
 			}
 		}

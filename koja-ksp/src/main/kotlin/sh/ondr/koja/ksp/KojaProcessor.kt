@@ -3,6 +3,7 @@
 package sh.ondr.koja.ksp
 
 import com.google.devtools.ksp.KspExperimental
+import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.getFunctionDeclarationsByName
 import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.processing.CodeGenerator
@@ -26,10 +27,10 @@ class KojaProcessor(
 	val codeGenerator: CodeGenerator,
 	val logger: KSPLogger,
 ) : SymbolProcessor {
+	var moduleId: String? = null
 	val originatingFiles = mutableListOf<KSFile>()
-	val pkg = "sh.ondr.koja"
-	val kojaMetaPackage = "$pkg.generated.meta"
-	val kojaInitializerPackage = "$pkg.generated.initializer"
+	val kojaMetaPackage = "$PKG_BASE.generated.meta"
+	val kojaInitializerPackage = "$PKG_BASE.generated.initializer"
 	val validated = mutableSetOf<KSType>()
 	val visitingStack = mutableSetOf<KSType>()
 
@@ -37,10 +38,32 @@ class KojaProcessor(
 
 	var isTest = false
 
+	companion object {
+		private const val PKG_BASE = "sh.ondr.koja"
+		
+		private val PRIMITIVE_TYPES = setOf(
+			"kotlin.String",
+			"kotlin.Char",
+			"kotlin.Boolean",
+			"kotlin.Byte",
+			"kotlin.Short",
+			"kotlin.Int",
+			"kotlin.Long",
+			"kotlin.Float",
+			"kotlin.Double",
+		)
+	}
+
 	override fun process(resolver: Resolver): List<KSAnnotated> {
+		moduleId = normaliseModuleName(
+			resolver.getModuleName().getShortName(),
+		)
+
 		if (resolver.getModuleName().getShortName().endsWith("_test")) {
 			isTest = true
 		}
+
+		if (isTest) return emptyList() // skip processing in test tasks
 
 		// Validate and process
 		resolver
@@ -85,7 +108,7 @@ class KojaProcessor(
 		val qName = decl.qualifiedName?.asString()
 
 		// 2) Handle primitive types quickly
-		if (qName in primitiveTypes) {
+		if (qName in PRIMITIVE_TYPES) {
 			visitingStack.remove(type)
 			validated.add(type)
 			return null
@@ -93,10 +116,10 @@ class KojaProcessor(
 
 		// 3) Check if it’s a Set, List, or Map
 		if (qName == "kotlin.collections.Set") {
-			return checkSetType(type, ctx)
+			return checkCollectionType(type, ctx, "Set")
 		}
 		if (qName == "kotlin.collections.List") {
-			return checkListType(type, ctx)
+			return checkCollectionType(type, ctx, "List")
 		}
 		if (qName == "kotlin.collections.Map") {
 			return checkMapType(type, ctx)
@@ -125,35 +148,20 @@ class KojaProcessor(
 		return error
 	}
 
-	// Check that Set has 1 type parameter, then validate the element type.
-	fun checkSetType(
+	// Check that a collection type (List or Set) has exactly one type parameter
+	fun checkCollectionType(
 		type: KSType,
 		ctx: ValidationContext,
-	): ValidationError? {
-		if (type.arguments.size != 1) {
-			return ValidationError("Set must have exactly one type parameter.", ctx.chooseBlameNode())
-		}
-		val innerType = type.arguments[0].type?.resolve()
-			?: return ValidationError("Unable to resolve Set element type.", ctx.chooseBlameNode())
-
-		val innerErr = validateType(innerType, ctx)
-		if (innerErr != null) return innerErr
-		validated.add(type)
-		return null
-	}
-
-	// Check that List has 1 type parameter, then validate the element type.
-	fun checkListType(
-		type: KSType,
-		ctx: ValidationContext,
+		collectionName: String,
 	): ValidationResult {
 		if (type.arguments.size != 1) {
-			return ValidationError("List must have exactly one type parameter.", ctx.chooseBlameNode())
+			return ValidationError("$collectionName must have exactly one type parameter.", ctx.chooseBlameNode())
 		}
-		val inner = type.arguments[0].type?.resolve()
-			?: return ValidationError("Unable to resolve List element type.", ctx.chooseBlameNode())
-		val innerError = validateType(inner, ctx)
-		if (innerError != null) return innerError
+		val elementType = type.arguments[0].type?.resolve()
+			?: return ValidationError("Unable to resolve $collectionName element type.", ctx.chooseBlameNode())
+
+		val elementError = validateType(elementType, ctx)
+		if (elementError != null) return elementError
 		validated.add(type)
 		return null
 	}
@@ -235,18 +243,6 @@ class KojaProcessor(
 
 	// ------------------------------------------------------------------
 
-	private val primitiveTypes = setOf(
-		"kotlin.String",
-		"kotlin.Char",
-		"kotlin.Boolean",
-		"kotlin.Byte",
-		"kotlin.Short",
-		"kotlin.Int",
-		"kotlin.Long",
-		"kotlin.Float",
-		"kotlin.Double",
-	)
-
 	fun KSClassDeclaration.process() {
 		if (origin == Origin.KOTLIN_LIB || origin == Origin.JAVA_LIB) {
 			// Skip already compiled files
@@ -267,20 +263,31 @@ class KojaProcessor(
 		}
 	}
 
-	fun KSClassDeclaration.getParamInfos(): List<ParamInfo> =
-		primaryConstructor
-			?.parameters
-			?.mapIndexed { index, p ->
-				ParamInfo(
-					name = p.name?.asString() ?: "arg$index",
-					fqnType = p.type.resolve().toFqnString(),
-					readableType = p.type.resolve().toString(),
-					ksType = p.type.resolve(),
-					isNullable = p.type.resolve().isMarkedNullable,
-					hasDefault = p.hasDefault,
-					isRequired = !(p.hasDefault || p.type.resolve().isMarkedNullable),
-				)
-			} ?: emptyList()
+	fun KSClassDeclaration.getParamInfos(): List<ParamInfo> {
+		// Map each *declared* property by its Kotlin name so we can fetch its KDoc.
+		val props = getDeclaredProperties().associateBy { it.simpleName.asString() }
+
+		val ctor = primaryConstructor ?: return emptyList()
+
+		return ctor.parameters.mapIndexed { index, param ->
+			val name = param.name?.asString() ?: "arg$index"
+
+			// KDoc lives on the property declaration (if the backing field exists).
+			val description = props[name]?.docString?.trim()
+
+			val resolved = param.type.resolve()
+
+			ParamInfo(
+				name = name,
+				fqnType = resolved.toFqnString(),
+				ksType = resolved,
+				isNullable = resolved.isMarkedNullable,
+				hasDefault = param.hasDefault,
+				isRequired = !(param.hasDefault || resolved.isMarkedNullable),
+				description = description,
+			)
+		}
+	}
 
 	// If this class was generated by some other processor, find the original source that triggered the generation
 	fun KSClassDeclaration.getOriginalNode(resolver: Resolver): KSNode? =
@@ -304,4 +311,15 @@ class KojaProcessor(
 	override fun finish() {
 		generateInitializer()
 	}
+}
+
+fun normaliseModuleName(gradlePath: String): String {
+	// 1. drop the root project prefix “root:”
+	val withoutRoot = gradlePath.substringAfter(':', gradlePath)
+
+	// 2. change ':' and '-' to '_' and canonicalise
+	return withoutRoot
+		.replace(Regex("[-:]"), "_")
+		.replace(Regex("_+"), "_")
+		.trim('_')
 }

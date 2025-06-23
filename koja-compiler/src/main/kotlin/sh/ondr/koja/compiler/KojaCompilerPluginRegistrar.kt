@@ -24,10 +24,11 @@ class KojaCompilerPluginRegistrar : CompilerPluginRegistrar() {
 					moduleFragment: IrModuleFragment,
 					pluginContext: IrPluginContext,
 				) {
-					val moduleName = moduleFragment.descriptor.name.asStringStripSpecialMarkers()
+					val moduleName = moduleFragment.descriptor.stableName?.asStringStripSpecialMarkers()!!
+					val moduleId = normaliseModuleName(moduleName)
 					moduleFragment.transform(
 						KojaIrTransformer(
-							isTest = moduleName.endsWith("_test"),
+							moduleName = moduleId,
 							pluginContext = pluginContext,
 							logger = logger,
 						),
@@ -37,4 +38,15 @@ class KojaCompilerPluginRegistrar : CompilerPluginRegistrar() {
 			},
 		)
 	}
+}
+
+fun normaliseModuleName(gradlePath: String): String {
+	// 1. drop the root project prefix “root:”
+	val withoutRoot = gradlePath.substringAfter(':', gradlePath)
+
+	// 2. change ':' and '-' to '_' and canonicalise
+	return withoutRoot
+		.replace(Regex("[-:]"), "_")
+		.replace(Regex("_+"), "_")
+		.trim('_')
 }
