@@ -63,8 +63,6 @@ class KojaProcessor(
 			isTest = true
 		}
 
-		if (isTest) return emptyList() // skip processing in test tasks
-
 		// Validate and process
 		resolver
 			.getSymbolsWithAnnotation("sh.ondr.koja.JsonSchema")
