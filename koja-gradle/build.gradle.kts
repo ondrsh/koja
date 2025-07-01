@@ -8,8 +8,6 @@ plugins {
 }
 
 dependencies {
-	compileOnly(libs.auto.service)
-	compileOnly(libs.auto.service.annotations)
 	compileOnly(libs.kotlin.compiler.embeddable)
 	implementation(libs.kotlin.stdlib)
 	compileOnly(libs.kotlin.gradle.api)

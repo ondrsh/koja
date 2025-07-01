@@ -1,6 +1,5 @@
 package sh.ondr.koja.gradle
 
-import com.google.auto.service.AutoService
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -12,7 +11,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
-@AutoService(KotlinCompilerPluginSupportPlugin::class)
 class KojaGradlePlugin : KotlinCompilerPluginSupportPlugin {
 	override fun apply(target: Project) {
 		// Check Kotlin version
