@@ -16,9 +16,10 @@ class KojaGradlePlugin : KotlinCompilerPluginSupportPlugin {
 		// Check Kotlin version
 		target.checkKotlinVersion()
 
-		// Check KSP version and apply if needed
-		target.checkKspVersion()
+		target.checkKspVersion() // Check KSP version
+		target.pluginManager.apply("com.google.devtools.ksp") // Apply KSP (will be a no-op if user already declared it)
 
+		// Get Koja dependencies
 		val kspDependency = target.getKspDependency()
 		val runtimeDependency = target.getRuntimeDependency()
 
@@ -68,22 +69,6 @@ class KojaGradlePlugin : KotlinCompilerPluginSupportPlugin {
 		}
 	}
 
-	fun Project.getRuntimeDependency() =
-		if (isInternalBuild()) {
-			project(":koja-runtime")
-		} else {
-			"sh.ondr.koja:koja-runtime:${PLUGIN_VERSION}"
-		}
-
-	fun Project.getKspDependency() =
-		if (isInternalBuild()) {
-			project(":koja-ksp")
-		} else {
-			"sh.ondr.koja:koja-ksp:${PLUGIN_VERSION}"
-		}
-
-	fun Project.isInternalBuild() = findProperty("sh.ondr.koja.internal") == "true"
-
 	override fun isApplicable(kotlinCompilation: KotlinCompilation<*>): Boolean = true
 
 	override fun getCompilerPluginId(): String = "sh.ondr.koja"
@@ -106,6 +91,22 @@ class KojaGradlePlugin : KotlinCompilerPluginSupportPlugin {
 			}
 		}
 	}
+
+	fun Project.isInternalBuild() = findProperty("sh.ondr.koja.internal") == "true"
+
+	fun Project.getRuntimeDependency() =
+		if (isInternalBuild()) {
+			project(":koja-runtime")
+		} else {
+			"sh.ondr.koja:koja-runtime:${PLUGIN_VERSION}"
+		}
+
+	fun Project.getKspDependency() =
+		if (isInternalBuild()) {
+			project(":koja-ksp")
+		} else {
+			"sh.ondr.koja:koja-ksp:${PLUGIN_VERSION}"
+		}
 
 	private fun Project.checkKotlinVersion() {
 		var validated = false
@@ -166,9 +167,6 @@ class KojaGradlePlugin : KotlinCompilerPluginSupportPlugin {
 				)
 			}
 		}
-
-		// Apply KSP ourselves (will be a no-op if user already declared it)
-		pluginManager.apply("com.google.devtools.ksp")
 	}
 
 	private fun Plugin<*>.resolvedVersion(): String? {
