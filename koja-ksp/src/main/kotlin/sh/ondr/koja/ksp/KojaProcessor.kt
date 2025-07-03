@@ -31,8 +31,8 @@ class KojaProcessor(
 	val originatingFiles = mutableListOf<KSFile>()
 	val kojaMetaPackage = "$PKG_BASE.generated.meta"
 	val kojaInitializerPackage = "$PKG_BASE.generated.initializer"
-	val validated = mutableSetOf<KSType>()
-	val visitingStack = mutableSetOf<KSType>()
+	val validated = mutableSetOf<String>()
+	val visitingStack = mutableSetOf<String>()
 
 	val generatedMetasFqs = mutableSetOf<String>()
 
@@ -55,6 +55,9 @@ class KojaProcessor(
 	}
 
 	override fun process(resolver: Resolver): List<KSAnnotated> {
+		validated.clear()
+		visitingStack.clear()
+		
 		moduleId = normaliseModuleName(
 			resolver.getModuleName().getShortName(),
 		)
@@ -97,18 +100,21 @@ class KojaProcessor(
 		type: KSType,
 		ctx: ValidationContext,
 	): ValidationResult {
+		// Create a unique string representation of the type
+		val typeKey = type.toString()
+		
 		// 1) If we've already validated or are in a cycle, skip
-		if (type in validated) return null
-		if (type in visitingStack) return null
+		if (typeKey in validated) return null
+		if (typeKey in visitingStack) return null
 
-		visitingStack.add(type)
+		visitingStack.add(typeKey)
 		val decl = type.declaration
 		val qName = decl.qualifiedName?.asString()
 
 		// 2) Handle primitive types quickly
 		if (qName in PRIMITIVE_TYPES) {
-			visitingStack.remove(type)
-			validated.add(type)
+			visitingStack.remove(typeKey)
+			validated.add(typeKey)
 			return null
 		}
 
@@ -139,9 +145,9 @@ class KojaProcessor(
 			)
 		}
 
-		visitingStack.remove(type)
+		visitingStack.remove(typeKey)
 		if (error == null) {
-			validated.add(type)
+			validated.add(typeKey)
 		}
 		return error
 	}
@@ -160,7 +166,7 @@ class KojaProcessor(
 
 		val elementError = validateType(elementType, ctx)
 		if (elementError != null) return elementError
-		validated.add(type)
+		validated.add(type.toString())
 		return null
 	}
 
@@ -182,7 +188,7 @@ class KojaProcessor(
 		val valueType = type.arguments[1].type?.resolve() ?: return ValidationError("Unable to resolve Map value type.", ctx.chooseBlameNode())
 		val valueError = validateType(valueType, ctx)
 		if (valueError != null) return valueError
-		validated.add(type)
+		validated.add(type.toString())
 		return null
 	}
 
@@ -195,7 +201,7 @@ class KojaProcessor(
 		if (!classDecl.isAnnotationPresent(JsonSchema::class)) {
 			return ValidationError("Enums must be annotated with @JsonSchema.", ctx.chooseBlameNode())
 		}
-		validated.add(type)
+		validated.add(type.toString())
 		return null
 	}
 
@@ -235,7 +241,7 @@ class KojaProcessor(
 			)
 			if (propError != null) return propError
 		}
-		validated.add(type)
+		validated.add(type.toString())
 		return null
 	}
 

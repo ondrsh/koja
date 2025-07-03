@@ -7,7 +7,6 @@ fun KojaProcessor.generateInitializer() {
 	val file = codeGenerator.createNewFile(
 		dependencies = Dependencies(
 			aggregating = false,
-			sources = originatingFiles.toTypedArray(),
 		),
 		packageName = kojaInitializerPackage,
 		fileName = objectName,
