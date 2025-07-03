@@ -65,17 +65,24 @@ Output:
 The current API is experimental and might change.
 
 ## Installation
+
 Add koja and the serialization plugin to your plugins block:
 
 ```kotlin
 plugins {
-  kotlin("multiplatform") version "2.1.0" // or kotlin("jvm")
-  kotlin("plugin.serialization") version "2.1.0"
-  id("sh.ondr.koja") version "0.4.0"
+  kotlin("multiplatform") version "2.2.0" // or kotlin("jvm")
+  kotlin("plugin.serialization") version "2.2.0"
+  id("sh.ondr.koja") version "0.4.1"
 }
 ```
 
+### Version Compatibility
 
+Koja includes a compiler plugin that requires exact Kotlin version matching. Each Koja version is hard-linked to a specific Kotlin version:
+
+| Koja Version | Required Kotlin Version |
+|--------------|------------------------|
+| 0.4.1        | 2.2.0                  |
 
 ## Usage
 
