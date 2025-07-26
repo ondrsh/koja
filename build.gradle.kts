@@ -21,11 +21,15 @@ allprojects {
 	spotless {
 		kotlin {
 			target("**/*.kt")
+			targetExclude("**/build/**/*.kt")
 			ktlint()
+			// Force Unix line endings on all platforms
+			lineEndings = com.diffplug.spotless.LineEnding.UNIX
 		}
 		kotlinGradle {
 			target("**/*.gradle.kts")
 			ktlint()
+			lineEndings = com.diffplug.spotless.LineEnding.UNIX
 		}
 	}
 }

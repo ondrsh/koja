@@ -1,0 +1,133 @@
+name: Test Build (Dry Run)
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_publishing:
+        description: 'Test publishing to local repository'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  test-multiplatform-build:
+    runs-on: macos-14
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Install MinGW toolchain
+        run: |
+          brew update && brew install mingw-w64
+          echo "$(brew --prefix)/opt/mingw-w64/bin" >> $GITHUB_PATH
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          add-job-summary: false
+
+      - name: Cache Kotlin/Native
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.konan
+            ~/.gradle/kotlin
+          key: ${{ runner.os }}-konan-${{ hashFiles('gradle/libs.versions.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-konan-
+
+      - name: Build all targets
+        run: |
+          echo "🔨 Building all platforms including Windows (mingwX64)..."
+          echo "Host OS: $(uname -s)"
+          echo "Available targets on this host:"
+          echo "  - JVM"
+          echo "  - JavaScript (Browser & Node.js)"
+          echo "  - Apple: macosX64, macosArm64, iosArm64, iosX64, iosSimulatorArm64"
+          echo "  - Windows: mingwX64 (via cross-compilation)"
+          echo ""
+          ./gradlew build --no-daemon --stacktrace --parallel --build-cache
+
+      - name: List built artifacts
+        run: |
+          echo "📦 Built artifacts:"
+          find . -name "*.klib" -o -name "*.jar" | grep -E "(koja-runtime|koja-test)" | sort
+
+      - name: Test local publishing (optional)
+        if: ${{ inputs.test_publishing }}
+        run: |
+          echo "📤 Testing publish to local Maven repository..."
+          ./gradlew publishToMavenLocal --no-daemon --stacktrace --parallel --build-cache
+          
+          echo "✅ Published artifacts in local repository:"
+          ls -la ~/.m2/repository/sh/ondr/koja/
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-all-platforms
+          path: |
+            **/build/libs/
+            **/build/classes/
+            **/build/compileSync/
+          retention-days: 7
+
+  test-matrix-build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-14, windows-latest]
+        
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          add-job-summary: false
+
+      - name: Cache Kotlin/Native
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.konan
+            ~/.gradle/kotlin
+          key: ${{ runner.os }}-konan-${{ hashFiles('gradle/libs.versions.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-konan-
+
+      - name: Test build on ${{ matrix.os }}
+        run: ./gradlew build --no-daemon --stacktrace --parallel --build-cache
+
+      - name: Report supported targets
+        run: |
+          echo "✅ Successfully built on ${{ matrix.os }}"
+          echo "Targets built:"
+          ./gradlew -q :koja-runtime:tasks --group=build | grep -E "(compileKotlin|assemble)" || true
