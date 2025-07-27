@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.GradlePlugin
+import com.vanniktech.maven.publish.JavadocJar
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -5,6 +7,7 @@ plugins {
 	alias(libs.plugins.build.config)
 	alias(libs.plugins.kotlin.jvm)
 	alias(libs.plugins.maven.publish)
+	alias(libs.plugins.dokka)
 }
 
 dependencies {
@@ -44,6 +47,10 @@ if (rootProject.name != "koja") {
 // Only publish from real build
 if (rootProject.name == "koja") {
 	apply(plugin = "com.vanniktech.maven.publish")
+	
+	mavenPublishing {
+		configure(GradlePlugin(javadocJar = JavadocJar.Dokka("dokkaGeneratePublicationHtml")))
+	}
 }
 
 java {

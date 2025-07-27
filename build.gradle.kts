@@ -5,6 +5,7 @@ plugins {
 	alias(libs.plugins.maven.publish).apply(false)
 	alias(libs.plugins.ondrsh.koja).apply(false)
 	alias(libs.plugins.spotless)
+	alias(libs.plugins.dokka)
 }
 
 allprojects {
@@ -31,5 +32,18 @@ allprojects {
 			ktlint()
 			lineEndings = com.diffplug.spotless.LineEnding.UNIX
 		}
+	}
+}
+
+// Configure Dokka v2 aggregation - only user-facing modules
+dependencies {
+	dokka(project(":koja-runtime")) // Main API: @JsonSchema, jsonSchema<T>()
+	dokka(project(":koja-gradle")) // Gradle plugin: id("sh.ondr.koja")
+	// Internal modules (koja-ksp, koja-compiler) are not included in public docs
+}
+
+dokka {
+	dokkaPublications.html {
+		outputDirectory.set(rootDir.resolve("build/dokka/html"))
 	}
 }

@@ -1,5 +1,6 @@
 [versions]
 build-config = "5.5.1"
+dokka = "2.0.0"
 gradle-versions = "0.51.0"
 koja = "0.1.1" # will be substituted
 kotlin = "2.2.0"
@@ -10,6 +11,7 @@ spotless = "7.0.2"
 
 [plugins]
 build-config = { id = "com.github.gmazzo.buildconfig", version.ref = "build-config" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 gradle-versions = { id = "com.github.ben-manes.versions", version.ref = "gradle-versions" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

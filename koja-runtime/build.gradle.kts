@@ -1,9 +1,12 @@
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
 	alias(libs.plugins.kotlin.multiplatform)
 	alias(libs.plugins.kotlin.serialization)
 	alias(libs.plugins.maven.publish)
+	alias(libs.plugins.dokka)
 }
 
 kotlin {
@@ -38,4 +41,8 @@ kotlin {
 			}
 		}
 	}
+}
+
+mavenPublishing {
+	configure(KotlinMultiplatform(javadocJar = JavadocJar.Dokka("dokkaGeneratePublicationHtml")))
 }
