@@ -1,6 +1,7 @@
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.konan.target.HostManager
 
 plugins {
 	alias(libs.plugins.kotlin.multiplatform)
@@ -10,9 +11,6 @@ plugins {
 }
 
 kotlin {
-	iosArm64()
-	iosSimulatorArm64()
-	iosX64()
 	js(IR) {
 		browser()
 		nodejs()
@@ -23,10 +21,25 @@ kotlin {
 			jvmTarget.set(JvmTarget.JVM_11)
 		}
 	}
-	linuxX64()
-	macosArm64()
-	macosX64()
-	mingwX64()
+
+	// iOS and macOS targets can only be built on macOS
+	if (HostManager.hostIsMac) {
+		iosArm64()
+		iosSimulatorArm64()
+		iosX64()
+		macosArm64()
+		macosX64()
+	}
+
+	// Linux targets
+	if (HostManager.hostIsLinux) {
+		linuxX64()
+	}
+
+	// Windows targets
+	if (HostManager.hostIsMingw) {
+		mingwX64()
+	}
 
 	sourceSets {
 		commonMain {
