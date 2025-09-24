@@ -22,23 +22,24 @@ kotlin {
 		}
 	}
 
-	// iOS and macOS targets can only be built on macOS
-	if (HostManager.hostIsMac) {
-		iosArm64()
-		iosSimulatorArm64()
-		iosX64()
-		macosArm64()
-		macosX64()
-	}
+	when {
+		HostManager.hostIsMac -> {
+			iosArm64()
+			iosSimulatorArm64()
+			iosX64()
+			macosArm64()
+			macosX64()
+			linuxX64()
+			mingwX64()
+		}
 
-	// Linux targets
-	if (HostManager.hostIsLinux) {
-		linuxX64()
-	}
+		HostManager.hostIsLinux -> {
+			linuxX64()
+		}
 
-	// Windows targets
-	if (HostManager.hostIsMingw) {
-		mingwX64()
+		HostManager.hostIsMingw -> {
+			mingwX64()
+		}
 	}
 
 	sourceSets {

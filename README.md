@@ -72,7 +72,7 @@ Add koja and the serialization plugin to your plugins block:
 plugins {
   kotlin("multiplatform") version "2.2.20" // or kotlin("jvm")
   kotlin("plugin.serialization") version "2.2.20"
-  id("sh.ondr.koja") version "0.4.4"
+  id("sh.ondr.koja") version "0.4.5"
 }
 ```
 
@@ -80,11 +80,11 @@ plugins {
 
 Koja includes a compiler plugin that requires exact Kotlin version matching. Each Koja version is hard-linked to a specific Kotlin version:
 
-| Koja Version    | Required Kotlin Version |
-|-----------------|-------------------------|
-| 0.4.4           | 2.2.20                  |
-| 0.4.3           | 2.2.10                  |
-| 0.4.1-0.4.2     | 2.2.0                   |
+| Koja Version | Required Kotlin Version |
+|--------------|-------------------------|
+| 0.4.4-0.4.5  | 2.2.20                  |
+| 0.4.3        | 2.2.10                  |
+| 0.4.1-0.4.2  | 2.2.0                   |
 
 ## Usage
 
