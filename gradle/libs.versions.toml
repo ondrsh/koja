@@ -3,9 +3,9 @@ build-config = "5.5.1"
 dokka = "2.0.0"
 gradle-versions = "0.51.0"
 koja = "0.1.1" # will be substituted
-kotlin = "2.2.20"
+kotlin = "2.2.21"
 kotlinx-serialization = "1.9.0"
-ksp-api = "2.2.20-2.0.3"
+ksp-api = "2.3.0"
 maven-publish = "0.30.0"
 spotless = "7.2.1"
 
