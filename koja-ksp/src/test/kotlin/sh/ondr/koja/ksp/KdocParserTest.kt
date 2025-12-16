@@ -1,11 +1,11 @@
 package sh.ondr.koja.ksp
 
-import org.gradle.internal.impldep.junit.framework.TestCase.assertTrue
 import org.junit.jupiter.api.assertThrows
 import sh.ondr.koja.ksp.kdoc.parseKdoc
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class KdocParserTest {
 	@Test
