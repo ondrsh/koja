@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 
 @OptIn(ExperimentalCompilerApi::class)
 class KojaCompilerPluginRegistrar : CompilerPluginRegistrar() {
+	override val pluginId: String = "sh.ondr.koja"
 	override val supportsK2 = true
 
 	override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
