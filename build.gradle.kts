@@ -1,3 +1,6 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.gradle.kotlin.dsl.withType
+
 plugins {
 	alias(libs.plugins.gradle.versions)
 	alias(libs.plugins.kotlin.jvm).apply(false)
@@ -46,4 +49,33 @@ dokka {
 	dokkaPublications.html {
 		outputDirectory.set(rootDir.resolve("build/dokka/html"))
 	}
+}
+
+tasks.withType<DependencyUpdatesTask> {
+	rejectVersionIf {
+		isNonStable(candidate.version)
+	}
+}
+
+fun isNonStable(version: String): Boolean {
+	val upperVersion = version.uppercase()
+	val unstableKeywords =
+		listOf(
+			"ALPHA",
+			"BETA",
+			"RC",
+			"CR",
+			"M",
+			"PREVIEW",
+			"SNAPSHOT",
+			"DEV",
+			"PRE",
+			"BUILD",
+			"NIGHTLY",
+			"CANARY",
+			"EAP",
+			"MILESTONE",
+		)
+
+	return unstableKeywords.any { upperVersion.contains(it) }
 }
