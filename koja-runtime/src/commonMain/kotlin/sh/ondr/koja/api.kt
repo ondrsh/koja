@@ -129,7 +129,9 @@ internal fun SerialDescriptor.toPolymorphicSchema(): Schema = ObjectSchema()
 internal fun toPrimitiveSchema(kind: PrimitiveKind): Schema =
 	when (kind) {
 		PrimitiveKind.STRING, PrimitiveKind.CHAR -> StringSchema()
+
 		PrimitiveKind.BOOLEAN -> BooleanSchema()
+
 		PrimitiveKind.BYTE,
 		PrimitiveKind.SHORT,
 		PrimitiveKind.INT,

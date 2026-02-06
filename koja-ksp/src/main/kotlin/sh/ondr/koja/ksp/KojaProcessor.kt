@@ -138,7 +138,9 @@ class KojaProcessor(
 			)
 
 			classDecl.classKind == ClassKind.ENUM_CLASS -> checkEnumType(classDecl, type, ctx)
+
 			classDecl.classKind == ClassKind.CLASS -> checkJsonSchemaClass(classDecl, type, ctx)
+
 			else -> ValidationError(
 				"Type '${classDecl.qualifiedName?.asString()}' is not a supported primitive, collection, enum, or @JsonSchema class.",
 				ctx.chooseBlameNode(),

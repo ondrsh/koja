@@ -7,7 +7,7 @@ kotlin = "2.3.10"
 kotlinx-serialization = "1.10.0"
 ksp-api = "2.3.5"
 maven-publish = "0.36.0"
-spotless = "8.1.0"
+spotless = "8.2.1"
 
 [plugins]
 build-config = { id = "com.github.gmazzo.buildconfig", version.ref = "build-config" }
