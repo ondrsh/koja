@@ -1,12 +1,12 @@
 [versions]
-build-config = "6.0.6"
+build-config = "6.0.7"
 dokka = "2.1.0"
 gradle-versions = "0.53.0"
 koja = "0.1.1" # will be substituted
-kotlin = "2.3.0"
-kotlinx-serialization = "1.9.0"
-ksp-api = "2.3.3"
-maven-publish = "0.35.0"
+kotlin = "2.3.10"
+kotlinx-serialization = "1.10.0"
+ksp-api = "2.3.5"
+maven-publish = "0.36.0"
 spotless = "8.1.0"
 
 [plugins]
