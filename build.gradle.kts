@@ -1,5 +1,6 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 
 plugins {
 	alias(libs.plugins.gradle.versions)
@@ -13,6 +14,12 @@ plugins {
 
 allprojects {
 	version = property("VERSION_NAME") as String
+
+	plugins.withType<KotlinBasePlugin> {
+		extensions.configure<KotlinProjectExtension> {
+			jvmToolchain(11)
+		}
+	}
 
 	configurations.configureEach {
 		resolutionStrategy.dependencySubstitution {

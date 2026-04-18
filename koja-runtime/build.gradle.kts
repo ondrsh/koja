@@ -1,6 +1,5 @@
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.konan.target.HostManager
 
 plugins {
@@ -12,15 +11,17 @@ plugins {
 
 kotlin {
 	js(IR) {
-		browser()
+		browser {
+			testTask {
+				useKarma {
+					useFirefoxHeadless()
+				}
+			}
+		}
 		nodejs()
 		binaries.library()
 	}
-	jvm {
-		compilerOptions {
-			jvmTarget.set(JvmTarget.JVM_11)
-		}
-	}
+	jvm()
 
 	when {
 		HostManager.hostIsMac -> {
