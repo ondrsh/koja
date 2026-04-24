@@ -99,6 +99,24 @@ class KdocParserTest {
 	}
 
 	@Test
+	fun `param declared with no name causes error`() {
+		val kdoc =
+			"""
+			Some function
+			@param
+			""".trimIndent()
+
+		val ex =
+			assertThrows<IllegalArgumentException> {
+				parseKdoc(
+					kdoc = kdoc,
+					parameters = listOf("name"),
+				)
+			}
+		assertTrue(ex.message!!.contains("has no parameter name"))
+	}
+
+	@Test
 	fun `multi-line param description`() {
 		val kdoc =
 			"""

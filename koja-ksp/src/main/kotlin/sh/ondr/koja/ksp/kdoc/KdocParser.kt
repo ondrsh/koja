@@ -70,6 +70,11 @@ fun parseKdoc(
 		if (marker.isParamOrProperty()) {
 			index++ // skip param/property tag
 			val content = readUntilNextTag()
+			if (content.isEmpty()) {
+				throw IllegalArgumentException(
+					"'$marker' has no parameter name.",
+				)
+			}
 			val paramName = content.first()
 			if (paramName !in parameters) {
 				throw IllegalArgumentException(

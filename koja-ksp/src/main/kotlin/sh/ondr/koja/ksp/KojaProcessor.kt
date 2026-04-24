@@ -86,7 +86,14 @@ class KojaProcessor(
 						symbol = error.node ?: classDecl,
 					)
 				} else {
-					classDecl.process()
+					try {
+						classDecl.process()
+					} catch (e: IllegalArgumentException) {
+						logger.error(
+							message = e.message ?: "Invalid JSON schema KDoc.",
+							symbol = classDecl,
+						)
+					}
 				}
 			}
 
