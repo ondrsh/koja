@@ -65,30 +65,38 @@ import sh.ondr.koja.Schema.StringSchema
  */
 inline fun <reified T : @JsonSchema Any> jsonSchema(): Schema = serializer<T>().descriptor.toSchema()
 
-fun SerialDescriptor.toSchema(): Schema =
+fun SerialDescriptor.toSchema(): Schema = toSchema(visiting = emptySet())
+
+internal fun SerialDescriptor.toSchema(visiting: Set<String>): Schema =
 	when (kind) {
 		is PrimitiveKind -> toPrimitiveSchema(kind as PrimitiveKind)
-		StructureKind.CLASS, StructureKind.OBJECT -> toObjectSchema()
-		StructureKind.LIST -> toArraySchema()
-		StructureKind.MAP -> toMapSchema()
+		StructureKind.CLASS, StructureKind.OBJECT -> toObjectSchema(visiting)
+		StructureKind.LIST -> toArraySchema(visiting)
+		StructureKind.MAP -> toMapSchema(visiting)
 		PolymorphicKind.OPEN, PolymorphicKind.SEALED -> toPolymorphicSchema()
 		SerialKind.ENUM -> toEnumSchema()
 		SerialKind.CONTEXTUAL -> TODO("Handle contextual")
 	}
 
-internal fun SerialDescriptor.toObjectSchema(): Schema {
+internal fun SerialDescriptor.toObjectSchema(visiting: Set<String>): Schema {
 	require(annotations.any { it is JsonSchema }) {
 		"Schema generation requires the @JsonSchema annotation on the class"
 	}
+	// kotlinx.serialization appends '?' to nullable descriptors, but registry is keyed by bare class name.
+	val name = serialName.removeSuffix("?")
+	val meta = KojaRegistry.map[name]
+	if (name in visiting) {
+		return ObjectSchema(description = meta?.description)
+	}
+
 	val properties = mutableMapOf<String, Schema>()
 	val requiredFields = mutableListOf<String>()
-
-	val meta = KojaRegistry.map[serialName]
+	val nested = visiting + name
 
 	for (i in 0 until elementsCount) {
 		val elementName = getElementName(i)
 		val childDescriptor = getElementDescriptor(i)
-		val childSchema = childDescriptor.toSchema()
+		val childSchema = childDescriptor.toSchema(nested)
 		val paramDesc = meta?.parameterDescriptions?.get(elementName)
 
 		properties[elementName] = if (paramDesc != null) {
@@ -111,16 +119,16 @@ internal fun SerialDescriptor.toObjectSchema(): Schema {
 	)
 }
 
-internal fun SerialDescriptor.toArraySchema(): Schema {
+internal fun SerialDescriptor.toArraySchema(visiting: Set<String>): Schema {
 	// Lists have a single element descriptor for items
 	val itemDescriptor = getElementDescriptor(0)
-	return ArraySchema(items = itemDescriptor.toSchema())
+	return ArraySchema(items = itemDescriptor.toSchema(visiting))
 }
 
 // Handle maps as objects with additionalProperties
-internal fun SerialDescriptor.toMapSchema(): Schema {
+internal fun SerialDescriptor.toMapSchema(visiting: Set<String>): Schema {
 	val valueDescriptor = getElementDescriptor(1)
-	return ObjectSchema(additionalProperties = valueDescriptor.toSchema().toJsonElement())
+	return ObjectSchema(additionalProperties = valueDescriptor.toSchema(visiting).toJsonElement())
 }
 
 // Polymorphic fallback: let's just return object schema for now
