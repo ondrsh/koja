@@ -1,17 +1,19 @@
 package sh.ondr.koja.ksp
 
 import com.google.devtools.ksp.processing.Dependencies
+import com.google.devtools.ksp.symbol.KSFile
 import sh.ondr.koja.KojaMeta
 
 fun KojaProcessor.generateKojaMeta(
 	fqName: String,
 	kdoc: KojaMeta,
+	originatingFile: KSFile,
 ) {
 	val propertyName = fqName.toCamelCase().replaceFirstChar { it.lowercase() } + "KojaMeta"
 	val file = codeGenerator.createNewFile(
 		dependencies = Dependencies(
-			aggregating = true,
-			sources = originatingFiles.toTypedArray(),
+			aggregating = false,
+			sources = arrayOf(originatingFile),
 		),
 		packageName = kojaMetaPackage,
 		fileName = propertyName,

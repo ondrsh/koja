@@ -28,7 +28,7 @@ class KojaProcessor(
 	val logger: KSPLogger,
 ) : SymbolProcessor {
 	var moduleId: String? = null
-	val originatingFiles = mutableListOf<KSFile>()
+	val initializerSources = mutableListOf<KSFile>()
 	val kojaMetaPackage = "$PKG_BASE.generated.meta"
 	val kojaInitializerPackage = "$PKG_BASE.generated.initializer"
 	val validated = mutableSetOf<String>()
@@ -268,16 +268,19 @@ class KojaProcessor(
 			return
 		}
 
+		val sourceFile = containingFile ?: return
+		initializerSources.add(sourceFile)
+
 		// If there is a KDoc, parse it and generate the KojaMeta
 		docString?.let { docString ->
 			val kdoc = parseKdoc(
 				kdoc = docString,
 				parameters = getParamInfos().map { it.name },
 			)
-			originatingFiles.add(containingFile!!)
 			generateKojaMeta(
 				fqName = qualifiedName!!.asString(),
 				kdoc = kdoc,
+				originatingFile = sourceFile,
 			)
 		}
 	}
