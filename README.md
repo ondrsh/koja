@@ -86,9 +86,9 @@ Platforms: JVM, JS (browser, Node), Native (iOS, macOS, Linux, Windows).
 
 ```kotlin
 plugins {
-  kotlin("multiplatform") version "2.3.20" // or kotlin("jvm")
-  kotlin("plugin.serialization") version "2.3.20"
-  id("sh.ondr.koja") version "0.4.9"
+  kotlin("multiplatform") version "2.3.21" // or kotlin("jvm")
+  kotlin("plugin.serialization") version "2.3.21"
+  id("sh.ondr.koja") version "0.4.10"
 }
 ```
 
@@ -96,6 +96,7 @@ Koja includes a Kotlin compiler plugin, so the Kotlin version must match exactly
 
 | Koja        | Kotlin  |
 |-------------|---------|
+| 0.4.10      | 2.3.21  |
 | 0.4.9       | 2.3.20  |
 | 0.4.8       | 2.3.10  |
 | 0.4.7       | 2.3.0   |
