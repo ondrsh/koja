@@ -127,13 +127,19 @@ class KojaProcessor(
 
 		// 3) Check if it’s a Set, List, or Map
 		if (qName == "kotlin.collections.Set") {
-			return checkCollectionType(type, ctx, "Set")
+			val error = checkCollectionType(type, ctx, "Set")
+			visitingStack.remove(typeKey)
+			return error
 		}
 		if (qName == "kotlin.collections.List") {
-			return checkCollectionType(type, ctx, "List")
+			val error = checkCollectionType(type, ctx, "List")
+			visitingStack.remove(typeKey)
+			return error
 		}
 		if (qName == "kotlin.collections.Map") {
-			return checkMapType(type, ctx)
+			val error = checkMapType(type, ctx)
+			visitingStack.remove(typeKey)
+			return error
 		}
 
 		// 4) If it’s a class or enum, handle that
