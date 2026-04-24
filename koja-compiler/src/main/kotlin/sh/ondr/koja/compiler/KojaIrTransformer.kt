@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.expressions.IrBlockBody
 import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.ir.util.constructedClass
@@ -40,27 +41,41 @@ class KojaIrTransformer(
 	}
 
 	override fun visitSimpleFunction(declaration: IrSimpleFunction): IrStatement {
-		declaration.transformChildrenVoid()
+		val transformed = super.visitSimpleFunction(declaration) as IrSimpleFunction
 
-		val isEntry = declaration.annotations.any { it.isAnnotation(FqName("sh.ondr.koja.KojaEntry")) }
-		if (isEntry) {
-			val body = declaration.body
-			if (body is IrBlockBody) {
-				val builder = DeclarationIrBuilder(
-					pluginContext,
-					declaration.symbol,
-					declaration.startOffset,
-					declaration.endOffset,
-				)
+		val isEntry = transformed.annotations.any { it.isAnnotation(FqName("sh.ondr.koja.KojaEntry")) }
+		if (!isEntry) return transformed
+
+		val builder = DeclarationIrBuilder(
+			pluginContext,
+			transformed.symbol,
+			transformed.startOffset,
+			transformed.endOffset,
+		)
+
+		when (val body = transformed.body) {
+			is IrBlockBody -> {
 				// Prepend reference to initializer
 				body.statements.add(
 					index = 0,
 					element = builder.irGetObject(initSymbol),
 				)
 			}
+
+			is IrExpressionBody -> {
+				val expression = body.expression
+				body.expression = builder.irBlock(expression = expression) {
+					+irGetObject(initSymbol)
+					+expression
+				}
+			}
+
+			else -> {
+				// Unsupported body kind; nothing to initialize.
+			}
 		}
 
-		return super.visitSimpleFunction(declaration)
+		return transformed
 	}
 
 	override fun visitConstructorCall(expression: IrConstructorCall): IrExpression {
