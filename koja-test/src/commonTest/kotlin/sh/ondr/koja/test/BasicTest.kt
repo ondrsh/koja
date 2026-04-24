@@ -20,6 +20,15 @@ data class TestPerson(
 	val name: String,
 )
 
+/**
+ * @property value A value with a description but no class description
+ */
+@JsonSchema
+@Serializable
+data class ParamOnlyDoc(
+	val value: String,
+)
+
 class BasicTest {
 	@Test
 	@KojaEntry
@@ -54,6 +63,18 @@ class BasicTest {
 {"type":"object","description":"A person defined in the test set","properties":{"name":{"type":"string","description":"The name of the person in the test set"}},"required":["name"]}
 			""".trimIndent(),
 			actual = testPersonSchema.toJsonElement().toString(),
+		)
+	}
+
+	@Test
+	@KojaEntry
+	fun classWithParamDocsOnlyHasNoLiteralNullDescription() {
+		val schema = jsonSchema<ParamOnlyDoc>()
+		assertEquals(
+			expected = """
+{"type":"object","properties":{"value":{"type":"string","description":"A value with a description but no class description"}},"required":["value"]}
+			""".trimIndent(),
+			actual = schema.toJsonElement().toString(),
 		)
 	}
 }

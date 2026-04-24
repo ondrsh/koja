@@ -40,3 +40,5 @@ fun String.escapeForKotlinString(): String {
 		.replace("\b", "\\b") // Escape backspace
 		.replace("\u000C", "\\u000C") // Escape form feed
 }
+
+fun String?.toKotlinStringLiteralOrNull(): String = this?.let { "\"${it.escapeForKotlinString()}\"" } ?: "null"

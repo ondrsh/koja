@@ -51,4 +51,11 @@ class UtilTest {
 		assertEquals("hello", "hello".escapeForKotlinString())
 		assertEquals("123", "123".escapeForKotlinString())
 	}
+
+	@Test
+	fun `test toKotlinStringLiteralOrNull`() {
+		assertEquals("null", (null as String?).toKotlinStringLiteralOrNull())
+		assertEquals("\"hello\"", "hello".toKotlinStringLiteralOrNull())
+		assertEquals("\"\\\"hello\\\"\"", "\"hello\"".toKotlinStringLiteralOrNull())
+	}
 }

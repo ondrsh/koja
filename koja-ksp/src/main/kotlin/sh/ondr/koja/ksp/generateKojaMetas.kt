@@ -23,7 +23,7 @@ fun KojaProcessor.generateKojaMeta(
 		appendLine()
 		appendLine("val $propertyName =")
 		appendLine("  \"${fqName.escapeForKotlinString()}\" to sh.ondr.koja.KojaMeta(")
-		appendLine("    description = \"${kdoc.description?.escapeForKotlinString()}\",")
+		appendLine("    description = ${kdoc.description.toKotlinStringLiteralOrNull()},")
 		appendLine("    parameterDescriptions = mapOf(")
 		appendLine("      ${kdoc.parameterDescriptions.entries.joinToString(",\n      ") { "\"${it.key.escapeForKotlinString()}\" to \"${it.value.escapeForKotlinString()}\"" }}")
 		appendLine("    )")
