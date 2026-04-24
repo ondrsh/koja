@@ -80,17 +80,7 @@ class KojaGradlePlugin : KotlinCompilerPluginSupportPlugin {
 			version = PLUGIN_VERSION,
 		)
 
-	override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> {
-		val project = kotlinCompilation.target.project
-		val isTestCompilation = (kotlinCompilation.name == "test")
-
-		return project.provider {
-			buildList {
-				SubpluginOption("enabled", "true")
-				SubpluginOption("isTestSet", isTestCompilation.toString())
-			}
-		}
-	}
+	override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> = kotlinCompilation.target.project.provider { emptyList() }
 
 	fun Project.isInternalBuild() = findProperty("sh.ondr.koja.internal") == "true"
 
